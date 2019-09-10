@@ -71,8 +71,10 @@ void fitBCent(int usePbPb=0, TString inputdata="" , TString inputmc="", TString 
     {
       //weightgen="pthatweight";
       //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
-      weightgen="pthatweight*((2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308)";
-      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308)";
+      weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
+      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
+      //weightgen="pthatweight*((2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308)";
+      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308)";
       //weightgen="pthatweight*(0.889175+0.000791*Gpt+0.000015*Gpt*Gpt)";
       //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(0.889175+0.000791*Bgenpt+0.000015*Bgenpt*Bgenpt)";
       //weightgen="pthatweight*Ncoll*(1.034350*TMath::Exp(-0.000844*(PVz+3.502992)*(PVz+3.502992)))*(0.715021+0.039896*Gpt-0.000834*Gpt*Gpt+0.000006*Gpt*Gpt*Gpt)"; // MC Gpt
@@ -91,16 +93,19 @@ void fitBCent(int usePbPb=0, TString inputdata="" , TString inputmc="", TString 
   nt->AddFriend("hltanalysis/HltTree");
   nt->AddFriend("hiEvtAnalyzer/HiTree");
   nt->AddFriend("skimanalysis/HltTree");
+  nt->AddFriend("BDT");
   TTree* ntGen = (TTree*)infMC->Get("Bfinder/ntGen");
   ntGen->AddFriend("hltanalysis/HltTree");
   ntGen->AddFriend("hiEvtAnalyzer/HiTree");
   ntGen->AddFriend("Bfinder/ntKp"); //call PVz
   ntGen->AddFriend("skimanalysis/HltTree");
+  ntGen->AddFriend("BDT");
   TTree* ntMC = (TTree*)infMC->Get("Bfinder/ntKp");
   ntMC->AddFriend("hltanalysis/HltTree");
   ntMC->AddFriend("hiEvtAnalyzer/HiTree");
   ntMC->AddFriend("Bfinder/ntGen"); //call Bgen
   ntMC->AddFriend("skimanalysis/HltTree");
+  ntMC->AddFriend("BDT");
 
   /*
   //For 2015 PbPb, pp data, MC

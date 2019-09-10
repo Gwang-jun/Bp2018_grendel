@@ -54,12 +54,14 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
   ntMC->AddFriend("hiEvtAnalyzer/HiTree");
   ntMC->AddFriend("Bfinder/ntGen");
   ntMC->AddFriend("skimanalysis/HltTree");
+  ntMC->AddFriend("BDT");
   TTree* ntGen = (TTree*)infMC->Get("Bfinder/ntGen");
   ntGen->AddFriend("hltanalysis/HltTree");
   ntGen->AddFriend("hiEvtAnalyzer/HiTree");
   ntGen->AddFriend("Bfinder/ntKp");
   ntGen->AddFriend("skimanalysis/HltTree");
- 
+  ntGen->AddFriend("BDT");
+
   // optimal weigths
   TCut weighpthat = "1";
   TCut weightGpt = "1";
@@ -77,15 +79,14 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
     weighpthat = "pthatweight";
     weightHiBin = "Ncoll";
     weightPVz = "(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
-    //weightGpt = "1";
-    //weightBgenpt = "1";
-    weightGpt = "(2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308";
-    weightBgenpt = "(2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308";
-    //weightGpt = "0.889175+0.000791*Gpt+0.000015*Gpt*Gpt";
-    //weightBgenpt = "0.889175+0.000791*Bgenpt+0.000015*Bgenpt*Bgenpt";
-    //weightPVz = "1.034350*TMath::Exp(-0.000844*(PVz+3.502992)*(PVz+3.502992))"; // private MC
-    //weightGpt = "0.715021+0.039896*Gpt-0.000834*Gpt*Gpt+0.000006*Gpt*Gpt*Gpt"; // private MC Gpt
-    //weightBgenpt = "0.715021+0.039896*Bgenpt-0.000834*Bgenpt*Bgenpt+0.000006*Bgenpt*Bgenpt*Bgenpt"; // private MC Gpt
+    //weightGpt = "(2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308";
+    //weightBgenpt = "(2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308";
+    weightGpt = "(3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897";
+    weightBgenpt = "(3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897";
+    //weightGpt = "(1.883180+-0.290677*Gpt+0.000225*Gpt*Gpt)*TMath::Exp(-0.161669*Gpt)+1.171923";
+    //weightBgenpt = "(1.883180+-0.290677*Bgenpt+0.000225*Bgenpt*Bgenpt)*TMath::Exp(-0.161669*Bgenpt)+1.171923";
+    weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+    weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
   }
 
   TH1D* hPtMC = new TH1D("hPtMC","",_nBins,_ptBins);
@@ -101,6 +102,29 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
   ntGen->Project("hPtGen","hiBin",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgen.Data())));
   ntGen->Project("hPtGenAcc","hiBin",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
   ntGen->Project("hPtGenAccWeighted","hiBin",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
+
+  ////// tag & probe scaling factor
+  for(int i = 0; i < _nBins; i++){printf("%.2f, ", hPtMC->GetBinContent(i+1));}printf("\n");
+  double sf_pp[2] = {1., 1.};
+
+  //double sf_pbpb[2] = {1.0932, 1.1020};// FONLL Cent 0-30-90%
+  //double sf_pbpb[1] = {1.0953};// FONLL Cent 0-90%
+  //double sf_pbpb[2] = {1.0918, 1.1023};// Extrapolated pp Cent 0-30-90%
+  //double sf_pbpb[1] = {1.0943};// Extrapolated pp Cent 0-90%
+  //double sf_pbpb[2] = {1.0911, 1.1013};
+  double sf_pbpb[1] = {1.0936};
+
+  for(int i = 0; i < _nBins; i++){
+    if(label == "pp"){
+      hPtMC->SetBinContent(i+1, hPtMC->GetBinContent(i+1)*sf_pp[i]);
+      hPtMCrecoonly->SetBinContent(i+1, hPtMCrecoonly->GetBinContent(i+1)*sf_pp[i]);
+    }
+    if(label == "PbPb"){
+      hPtMC->SetBinContent(i+1, hPtMC->GetBinContent(i+1)*sf_pbpb[i]);
+      hPtMCrecoonly->SetBinContent(i+1, hPtMCrecoonly->GetBinContent(i+1)*sf_pbpb[i]);
+    }
+  }
+  //for(int i = 0; i < _nBins; i++){printf("%.2f, ", hPtMC->GetBinContent(i+1));}printf("\n");
 
   divideBinWidth(hPtMC);
   divideBinWidth(hPtMCrecoonly);
@@ -138,32 +162,118 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
   //hEff->Divide(hPtMC,hPtGen,1,1,"");
   hEff->Multiply(hEff,hEffAcc,1,1);
 
+  /*  
+  TFile* fileFONLLCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_FONLL_Cent1.root");
+  TFile* fileExtrapolatedppCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_Extrapolatedpp_Cent1.root");
+  TFile* fileFONLLCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_FONLL_Cent2.root");
+  TFile* fileExtrapolatedppCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_Extrapolatedpp_Cent2.root");  
+  TH1D* hEffFONLLCent1 = (TH1D*)fileFONLLCent1->Get("hEff");
+  hEffFONLLCent1->GetXaxis()->CenterTitle();
+  hEffFONLLCent1->GetYaxis()->CenterTitle();
+  hEffFONLLCent1->GetXaxis()->SetTitle("hiBin");
+  hEffFONLLCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffFONLLCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffFONLLCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffFONLLCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffFONLLCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffFONLLCent1->GetXaxis()->SetTitleFont(42);
+  hEffFONLLCent1->GetYaxis()->SetTitleFont(42);
+  hEffFONLLCent1->GetXaxis()->SetLabelFont(42);
+  hEffFONLLCent1->GetYaxis()->SetLabelFont(42);
+  hEffFONLLCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffFONLLCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffFONLLCent1->SetLineColor(kRed);
+  TH1D* hEffExtrapolatedppCent1 = (TH1D*)fileExtrapolatedppCent1->Get("hEff");
+  hEffExtrapolatedppCent1->GetXaxis()->CenterTitle();
+  hEffExtrapolatedppCent1->GetYaxis()->CenterTitle();
+  hEffExtrapolatedppCent1->GetXaxis()->SetTitle("hiBin");
+  hEffExtrapolatedppCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffExtrapolatedppCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffExtrapolatedppCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffExtrapolatedppCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffExtrapolatedppCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffExtrapolatedppCent1->GetXaxis()->SetTitleFont(42);
+  hEffExtrapolatedppCent1->GetYaxis()->SetTitleFont(42);
+  hEffExtrapolatedppCent1->GetXaxis()->SetLabelFont(42);
+  hEffExtrapolatedppCent1->GetYaxis()->SetLabelFont(42);
+  hEffExtrapolatedppCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffExtrapolatedppCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffExtrapolatedppCent1->SetLineColor(kBlue);
+  TH1D* hEffFONLLCent2 = (TH1D*)fileFONLLCent2->Get("hEff");
+  hEffFONLLCent2->GetXaxis()->CenterTitle();
+  hEffFONLLCent2->GetYaxis()->CenterTitle();
+  hEffFONLLCent2->GetXaxis()->SetTitle("hiBin");
+  hEffFONLLCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffFONLLCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffFONLLCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffFONLLCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffFONLLCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffFONLLCent2->GetXaxis()->SetTitleFont(42);
+  hEffFONLLCent2->GetYaxis()->SetTitleFont(42);
+  hEffFONLLCent2->GetXaxis()->SetLabelFont(42);
+  hEffFONLLCent2->GetYaxis()->SetLabelFont(42);
+  hEffFONLLCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffFONLLCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffFONLLCent2->SetLineColor(kRed);
+  TH1D* hEffExtrapolatedppCent2 = (TH1D*)fileExtrapolatedppCent2->Get("hEff");
+  hEffExtrapolatedppCent2->GetXaxis()->CenterTitle();
+  hEffExtrapolatedppCent2->GetYaxis()->CenterTitle();
+  hEffExtrapolatedppCent2->GetXaxis()->SetTitle("hiBin");
+  hEffExtrapolatedppCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffExtrapolatedppCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffExtrapolatedppCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffExtrapolatedppCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffExtrapolatedppCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffExtrapolatedppCent2->GetXaxis()->SetTitleFont(42);
+  hEffExtrapolatedppCent2->GetYaxis()->SetTitleFont(42);
+  hEffExtrapolatedppCent2->GetXaxis()->SetLabelFont(42);
+  hEffExtrapolatedppCent2->GetYaxis()->SetLabelFont(42);
+  hEffExtrapolatedppCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffExtrapolatedppCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffExtrapolatedppCent2->SetLineColor(kBlue);
   
-  TFile* filenoweight = new TFile("MCstudiesPbPb_noweight_Cent2.root");
-  TH1D* hEffnoweight = (TH1D*)filenoweight->Get("hEff");
-  TH1D* ptshape = (TH1D*)hEff->Clone("ptshape");
-  ptshape->Sumw2();
-  ptshape->Divide(hEffnoweight);
+  TH1D* ptshapeCent1 = (TH1D*)hEffExtrapolatedppCent1->Clone("ptshapeCent1");
+  ptshapeCent1->Sumw2();
+  ptshapeCent1->Divide(hEffFONLLCent1);
 
   TCanvas* c100 = new TCanvas("","",600,600);
   c100->cd();
-  ptshape->GetXaxis()->SetTitle("hiBin");
-  ptshape->GetYaxis()->SetTitle("Efficiency pt weight/noweight");
-  ptshape->Draw();
-  c100->SaveAs("ptshape_Cent2.png");
+  ptshapeCent1->SetMaximum(1.3);
+  ptshapeCent1->SetMinimum(0.7);  
+  ptshapeCent1->GetXaxis()->SetTitle("hiBin");
+  ptshapeCent1->GetYaxis()->SetTitle("#alpha x #epsilon Extrapolated pp/FONLL");
+  ptshapeCent1->Draw();
+  c100->SaveAs("ptshape_Cent1_BDT.png");
+  c100->SaveAs("ptshape_Cent1_BDT.pdf");
 
-  for(int j=0;j<_nBins;j++)
+  for(int j=0;j<2;j++)
     {
-      printf("hibin %.0f-%.0f ptshape uncertainty: %.2f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshape->GetBinContent(j+1)-1.0));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty: %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeCent1->GetBinContent(j+1)-1.0));
     }
-  
+  */
 
-  for(int j=0;j<_nBins;j++)
+  /*
+  TH1D* ptshapeCent2 = (TH1D*)hEffExtrapolatedppCent2->Clone("ptshapeCent2");
+  ptshapeCent2->Sumw2();
+  ptshapeCent2->Divide(hEffFONLLCent2);
+
+  TCanvas* c200 = new TCanvas("","",600,600);
+  c200->cd();
+  ptshapeCent2->SetMaximum(1.3);
+  ptshapeCent2->SetMinimum(0.7);  
+  ptshapeCent2->GetXaxis()->SetTitle("hiBin");
+  ptshapeCent2->GetYaxis()->SetTitle("#alpha x #epsilon Extrapolated pp/FONLL");
+  ptshapeCent2->Draw();
+  c200->SaveAs("ptshape_Cent2.png");
+  c200->SaveAs("ptshape_Cent2.pdf");
+
+  for(int j=0;j<1;j++)
     {
-      printf("%f\n",hEff->GetBinContent(j+1));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty: %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeCent2->GetBinContent(j+1)-1.0));
     }
+  */
 
-  TH2F* hemptyEff=new TH2F("hemptyEff","",50,0.,200.,20,0.,0.1);  
+  TH2F* hemptyEff=new TH2F("hemptyEff","",50,0.,200.,20,0.,0.2);  
   hemptyEff->GetXaxis()->CenterTitle();
   hemptyEff->GetYaxis()->CenterTitle();
   //hemptyEff->GetYaxis()->SetTitle("acceptance x #epsilon_{reco} x #epsilon_{sel} ");

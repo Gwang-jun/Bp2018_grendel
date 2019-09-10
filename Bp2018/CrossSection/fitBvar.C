@@ -329,8 +329,8 @@ TF1* fit(float ptmin, float ptmax, int s, int b, int widVar)
     if(s>0 && bkgmax[b]>=11) f->ReleaseParameter(11);
     if(s>0 && bkgmax[b]>=12) f->ReleaseParameter(12); 
     f->ReleaseParameter(3);
-    //    f->SetParLimits(3,0,1000);
-    f->SetParLimits(3,9,1000);
+    f->SetParLimits(3,0,1000);
+    //f->SetParLimits(3,9,1000);
 
 
     h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);

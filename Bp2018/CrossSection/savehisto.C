@@ -46,17 +46,19 @@ void savehisto(TString inputdata="", TString inputmc="", TString trgselection=""
   nt->AddFriend("hltanalysis/HltTree");
   nt->AddFriend("hiEvtAnalyzer/HiTree");
   nt->AddFriend("skimanalysis/HltTree");
+  nt->AddFriend("BDT");
   TTree* ntGen = (TTree*)infMC->Get("Bfinder/ntGen");
   ntGen->AddFriend("hltanalysis/HltTree");
   ntGen->AddFriend("hiEvtAnalyzer/HiTree");
   ntGen->AddFriend("Bfinder/ntKp"); //call PVz
   ntGen->AddFriend("skimanalysis/HltTree");
+  ntGen->AddFriend("BDT");
   TTree* ntMC = (TTree*)infMC->Get("Bfinder/ntKp");
   ntMC->AddFriend("hltanalysis/HltTree");
   ntMC->AddFriend("hiEvtAnalyzer/HiTree");
   ntMC->AddFriend("Bfinder/ntGen"); //call Bgen
   ntMC->AddFriend("skimanalysis/HltTree");
-
+  ntMC->AddFriend("BDT");
   
   cout<<"  -- Filling histograms"<<endl;
   cout<<"     "<<inputdata<<endl;

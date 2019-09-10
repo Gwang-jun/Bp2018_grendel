@@ -10,16 +10,20 @@
 
 // Yen-Jie: systematics table for B meson
 // Unit: In percentage
-const int nPtBins=1;
-double PtBins[nPtBins+1] = {5.,100.};//add a margin so that "FindBin" can work at the bin end
-const int AnaBins=7;
-double AnaPtBins[AnaBins+1] = {5.,7.,10.,15.,20.,30.,50.,100.};
+const int nPtBins=7;
+double PtBins[nPtBins+1] = {5.,7.,10.,15.,20.,30.,50.,60.};//add a margin so that "FindBin" can work at the bin end
 
-const int nCentBins=4;
-double CentBins[nCentBins+1] = {0.,10.,30.,50.,100.};
+const int AnaBins=7;
+double AnaPtBins[AnaBins+1] = {5.,7.,10.,15.,20.,30.,50.,60.};
+
+const int nPtBinsCent=1;
+double PtBinsCent[nPtBinsCent+1] = {5., 50.};
+
+const int nCentBins=2;
+double CentBins[nCentBins+1] = {0.,30.,90.};
 
 // =============================================================================================================
-// D meson decay
+// B meson decay
 // =============================================================================================================
 double BtomumuKBRUncertainty	= 2.80;			// from PDG
 // =============================================================================================================
@@ -28,16 +32,15 @@ double BtomumuKBRUncertainty	= 2.80;			// from PDG
 
 // Normalization uncertainty
 //double ppLumiUncertainty 	= 12;			// PAS 
-double ppLumiUncertainty 	= 2.0;			// paper
+double ppLumiUncertainty 	= 2.3;			// paper
 
 // Point-to-point
 double ppTrackingEfficiency 	= 4;   			// single track systematics from D* studies
-//double PbPbTrackingEfficiency 	= 5;   		// single track systematics from D* studies, PAS
 double PbPbTrackingEfficiency 	= 5;   			// from charged particle analysis, paper
 double ppAlignment = 2.8; //alignment systematic from pp 13 TeV analysis
-double PbPbAlignment = 2.8; //alignment systematic from pp 13 TeV analysis
+double PbPbAlignment =0.0; //alignment systematic from pp 13 TeV analysis
 double ppLifetime = 0.3; //from 13 TeV analysis
-double PbPbLifetime = 0.3; //from 13 TeV analysis
+double PbPbLifetime = 0.0; //from 13 TeV analysis
 
 TH1D*  ppSignalExtraction;
 TH1D*  ppMesonSelection;
@@ -54,14 +57,11 @@ TH1D* ppEff = (TH1D*)ppMCEfffile->Get("hEff");
 // =============================================================================================================
 
 // Normalization uncertainty
-double PbPbNMBUncertainty	= 2;		// uncertainty associated with minbias events,
-double TAAUncertainty0to100	= 8.9;	    // Updated number (4/7/2016)
-//double TAAUncertainty0to100HI = 8.9;	//PAS
-//double TAAUncertainty0to100LO = 8.9;	//PAS
-double TAAUncertainty0to100HI = 2.8;	//paper 20170223
-double TAAUncertainty0to100LO = 3.4;	//paper 
-double TAAUncertainty0to10	= 1.7;		// Updated number (4/7/2016)
-double PbPbLumiUncertainty	= 0.;		// 10% for the moment, to be updated (from Daniel), NOT used
+double PbPbNMBUncertainty	= 0;		// uncertainty associated with minbias events,
+double TAAUncertainty0to90	= 2.2;
+double TAAUncertainty0to30	= 2.0;
+double TAAUncertainty30to90     = 3.2;
+double PbPbLumiUncertainty	= 0;		// 10% for the moment, to be updated (from Daniel), NOT used
 
 // Point-to-point
 
@@ -69,7 +69,8 @@ TH1D*  PbPbSignalExtraction;
 TH1D*  PbPbMesonSelection;				               
 TH1D*  PbPbTagAndProbe;				                
 TH1D*  PbPbAccUnc;
-TF1 *fPbPbPtShape= new TF1("fPbPbPtShapeSig","[0]+[1]/(x)+[2]/x/x+[3]*x");
+TH1D*  PbPbPtShape;
+//TF1 *fPbPbPtShape= new TF1("fPbPbPtShapeSig","[0]+[1]/(x)+[2]/x/x+[3]*x");
 
 TFile* PbPbMCEfffile = new TFile("../CrossSection/ROOTfiles/MCstudiesPbPb.root");
 TH1D* PbPbEff = (TH1D*)PbPbMCEfffile->Get("hEff");
@@ -95,7 +96,7 @@ bool initialized = 0;
 void initializationPP()
 {
 	ppMesonSelection = new TH1D("ppMesonSelection","",nPtBins,PtBins);
-    ppMesonSelection->SetBinContent(1,		3.8);//PAS
+	ppMesonSelection->SetBinContent(1,		3.8);//PAS
 
 	ppSignalExtraction = new TH1D("ppSignalExtraction","",nPtBins,PtBins);
 //    ppSignalExtraction->SetBinContent(1,		2.7);//PAS
@@ -118,47 +119,106 @@ void initializationPP()
 	fPPPtShape->SetParameters(0.999265,-0.0458006,-0.181359,0);
 }
 
-void initializationPbPbCent0100()
+void initializationPbPbCent090ptbin()
 {
 
-  //PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins,PtBins);
-  //PbPbMesonSelection->SetBinContent(1,	12.0);//PAS
-  PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nBins,ptBins);
-  PbPbMesonSelection->SetBinContent(1, 27.6);
-  PbPbMesonSelection->SetBinContent(2, 8.26);
-  PbPbMesonSelection->SetBinContent(3, 9.12);
-  PbPbMesonSelection->SetBinContent(4, 13.7);
-  PbPbMesonSelection->SetBinContent(5, 9.57);
-  PbPbMesonSelection->SetBinContent(6, 8.92);
-  PbPbMesonSelection->SetBinContent(7, 10.6);
+	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins,PtBins);
+	PbPbMesonSelection->SetBinContent(1,14.66);
+	PbPbMesonSelection->SetBinContent(2,8.26);
+	PbPbMesonSelection->SetBinContent(3,9.12);
+	PbPbMesonSelection->SetBinContent(4,13.7);
+	PbPbMesonSelection->SetBinContent(5,9.57);
+	PbPbMesonSelection->SetBinContent(6,8.92);
+	PbPbMesonSelection->SetBinContent(7,10.6);
 
-  //PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBins,PtBins);
-  //PbPbSignalExtraction->SetBinContent(1,		2.6);//paper
-  PbPbSignalExtraction->SetBinContent(1, 22.8);
-  PbPbSignalExtraction->SetBinContent(2, 4.81);
-  PbPbSignalExtraction->SetBinContent(3, 5.45);
-  PbPbSignalExtraction->SetBinContent(4, 9.26);
-  PbPbSignalExtraction->SetBinContent(5, 2.18);
-  PbPbSignalExtraction->SetBinContent(6, 14.1);
-  PbPbSignalExtraction->SetBinContent(7, 4.50);
+	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBins,PtBins);
+	PbPbSignalExtraction->SetBinContent(1,9.32);
+	PbPbSignalExtraction->SetBinContent(2,4.79);
+	PbPbSignalExtraction->SetBinContent(3,3.92);
+	PbPbSignalExtraction->SetBinContent(4,7.29);
+	PbPbSignalExtraction->SetBinContent(5,1.77);
+	PbPbSignalExtraction->SetBinContent(6,7.65);
+	PbPbSignalExtraction->SetBinContent(7,4.02);
 
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",AnaBins,AnaPtBins);
-	double tnpUnc_pbpb[7] = {6.291468, 6.291468, 4.653674, 3.889682, 3.593492, 3.405239, 3.405239};
-	for(int i = 0; i < AnaBins; i++){
-//		PbPbTagAndProbe->SetBinContent(i+1,		13.0);//PAS
-		PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_pbpb[i]);//paper 20170224
-	}
+	double tnpUnc_pbpb[7] = {9.86, 3.14, 2.39, 1.86, 1.81, 1.88, 1.65};
+	for(int i = 0; i < AnaBins; i++) {PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_pbpb[i]);}
 
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",AnaBins,AnaPtBins);
-	//double AccUnc_PbPb[5] = {0.106659, 0.095249, 0.220865, 0.272690, 0.412991};//wrong CWRv8 
 	double AccUnc_PbPb[7] = {0.716141, 0.716141, 1.015990, 0.971805, 1.216616, 1.596899, 1.596899};
-	for(int i = 0; i < AnaBins; i++){
-//		PbPbAccUnc->SetBinContent(i+1,0);//PAS
-		PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPb[i]);//paper 20170314
-	}
+	for(int i = 0; i < AnaBins; i++) {PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPb[i]);}
 
-	fPbPbPtShape->SetParameters(0.984161,0.0593406,-0.3992,0.000271564);
+	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBins,PtBins);
+	PbPbPtShape->SetBinContent(1,4.52);
+	PbPbPtShape->SetBinContent(2,2.84);
+	PbPbPtShape->SetBinContent(3,0.65);
+	PbPbPtShape->SetBinContent(4,0.47);
+	PbPbPtShape->SetBinContent(5,0.43);
+	PbPbPtShape->SetBinContent(6,0.10);
+	PbPbPtShape->SetBinContent(7,0.00);
+
 }
+
+void initializationPbPbCent090()
+{
+
+	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
+	PbPbMesonSelection->SetBinContent(1,21.13);
+
+	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
+	PbPbSignalExtraction->SetBinContent(1,7.71);
+
+	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
+	PbPbTagAndProbe->SetBinContent(1,2.27);
+
+	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
+	PbPbAccUnc->SetBinContent(1,0.);
+
+	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
+	PbPbPtShape->SetBinContent(1,14.30);
+
+}
+
+void initializationPbPbCent3090()
+{
+
+	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
+	PbPbMesonSelection->SetBinContent(1,14.89);
+
+	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
+	PbPbSignalExtraction->SetBinContent(1,11.38);
+
+	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
+	PbPbTagAndProbe->SetBinContent(1,2.57);
+
+	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
+	PbPbAccUnc->SetBinContent(1,0.);
+
+	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
+	PbPbPtShape->SetBinContent(1,14.18);
+
+}
+
+void initializationPbPbCent030()
+{
+
+	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
+	PbPbMesonSelection->SetBinContent(1,24.12);
+
+	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
+	PbPbSignalExtraction->SetBinContent(1,2.97);
+
+	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
+	PbPbTagAndProbe->SetBinContent(1,2.18);
+
+	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
+	PbPbAccUnc->SetBinContent(1,0.);
+
+	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
+	PbPbPtShape->SetBinContent(1,14.34);
+
+}
+
 
 void initializationRAA()
 {
@@ -175,30 +235,20 @@ void initializationRAACent()
 	TAAUncertainty->SetBinContent(4,	15.0);
 }
 
-void initializationPbPbCent010()
-{
-
-	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins,PtBins);
-	PbPbMesonSelection->SetBinContent(1,		0.);
-
-
-	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBins,PtBins);
-	PbPbSignalExtraction->SetBinContent(1,	0.);
-
-	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBins,PtBins);
-	PbPbTagAndProbe->SetBinContent(1,		10.0);
-
-	fPbPbPtShape->SetParameters(0.984161,0.0593406,-0.3992,0.000271564);
-}
-
-void initialization(double centL=0,double centH=100){
+void initialization(bool ptbinning=1, double centL=0,double centH=100){
 
 	initializationPP();
 	initializationRAA();
 	initializationRAACent();
-	if (centL==0&&(centH==100||centH==90)) initializationPbPbCent0100();
-	if (centL==0&&centH==10) initializationPbPbCent010();
-	initialized=1;
+
+	if(ptbinning&&centL==0&&centH==90) initializationPbPbCent090ptbin();
+	if(!ptbinning)
+	  {
+	    if (centL==0&&centH==90) initializationPbPbCent090();
+	    if (centL==0&&centH==30) initializationPbPbCent030();
+	    if (centL==30&&centH==90) initializationPbPbCent3090();
+	  }
+	initialized=0;
 
 }
 
@@ -212,13 +262,10 @@ float normalizationUncertaintyForRAA(bool TAAhi = 1, double centL=0,double centH
 	sys+=PbPbNMBUncertainty*PbPbNMBUncertainty;
 	if (centL==0&&centH==10) {
 		// 0-10%
-		sys+=TAAUncertainty0to10*TAAUncertainty0to10;
+	  sys+=TAAUncertainty0to30*TAAUncertainty0to30;
 	} else {
-		// 0-100%a
-		if(TAAhi == 1)
-			sys+=TAAUncertainty0to100LO*TAAUncertainty0to100LO;
-		if(TAAhi == 0)
-			sys+=TAAUncertainty0to100HI*TAAUncertainty0to100HI;
+		// 0-90%
+	  sys+=TAAUncertainty0to90*TAAUncertainty0to90;
 	}
 	return sqrt(sys);
 }
@@ -255,7 +302,7 @@ float systematicsForRAA(double pt,double centL=0,double centH=100, double HLT=0,
 		PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
 
 	sys+=fPPPtShape->Eval(pt)*fPPPtShape->Eval(pt);
-	sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
+	//sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
 
 	sys+=(ppTrackingEfficiency)*(ppTrackingEfficiency);
 	sys+=(PbPbTrackingEfficiency)*(PbPbTrackingEfficiency);
@@ -325,7 +372,7 @@ float systematicsForRAA_UnCorrelated(double pt,double centL=0,double centH=100, 
 		PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
 
 	sys+=fPPPtShape->Eval(pt)*fPPPtShape->Eval(pt);
-	sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
+	//sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
 
 	sys+= ppTagAndProbe->GetBinContent(ppTagAndProbe->FindBin(pt))*
 		ppTagAndProbe->GetBinContent(ppTagAndProbe->FindBin(pt));
@@ -370,7 +417,7 @@ float systematicsForRAAY(double cent,double centL=0,double centH=100, double HLT
 		PbPbEffY->GetBinError(PbPbEffY->FindBin(cent))/PbPbEffY->GetBinContent(PbPbEffY->FindBin(cent))*100;
 
 	sys+=fPPPtShape->Eval(PtBins[0])*fPPPtShape->Eval(PtBins[0]);
-	sys+=fPbPbPtShape->Eval(PtBins[0])*fPbPbPtShape->Eval(PtBins[0]);
+	//sys+=fPbPbPtShape->Eval(PtBins[0])*fPbPbPtShape->Eval(PtBins[0]);
 
 	sys+=(ppTrackingEfficiency)*(ppTrackingEfficiency);
 	sys+=(PbPbTrackingEfficiency)*(PbPbTrackingEfficiency);
@@ -433,7 +480,7 @@ float systematicsForRAACent(double cent,double centL=0,double centH=100, double 
 		PbPbEffCent->GetBinError(PbPbEffCent->FindBin(cent))/PbPbEffCent->GetBinContent(PbPbEffCent->FindBin(cent))*100;
 
 	sys+=fPPPtShape->Eval(PtBins[0])*fPPPtShape->Eval(PtBins[0]);
-	sys+=fPbPbPtShape->Eval(PtBins[0])*fPbPbPtShape->Eval(PtBins[0]);
+	//sys+=fPbPbPtShape->Eval(PtBins[0])*fPbPbPtShape->Eval(PtBins[0]);
 
 	sys+=(ppTrackingEfficiency)*(ppTrackingEfficiency);
 	sys+=(PbPbTrackingEfficiency)*(PbPbTrackingEfficiency);
@@ -470,8 +517,8 @@ float normalizationUncertaintyForRCP(double centL=0,double centH=100)
 
 float systematicsForRCP(double pt, double HLT=0,double centL=0,double centH=100)
 {
-  if (!initialized && centL==0&&(centH==100||centH==90)) initializationPbPbCent0100();
-	if (!initialized && centL==0&&centH==10) initializationPbPbCent010();
+  if (!initialized && centL==0&&centH==90) initializationPbPbCent090();
+	if (!initialized && centL==0&&centH==30) initializationPbPbCent030();
 	return 0.2;
 
 }
@@ -560,46 +607,48 @@ float normalizationUncertaintyForPbPb(bool TAAhi = 1, double centL=0,double cent
 	double sys = ((BtomumuKBRUncertainty*BtomumuKBRUncertainty)+(PbPbNMBUncertainty*PbPbNMBUncertainty));
 	if (centL==0&&centH==10) {
 		// 0-10%
-		sys+=TAAUncertainty0to10*TAAUncertainty0to10;
+	  sys+=TAAUncertainty0to30*TAAUncertainty0to30;
 	} else {
-		// 0-100%
-		if(TAAhi == 1)
-			sys+=TAAUncertainty0to100HI*TAAUncertainty0to100HI;
-		if(TAAhi == 0)
-			sys+=TAAUncertainty0to100LO*TAAUncertainty0to100LO;
+		// 0-90%
+	  sys+=TAAUncertainty0to90*TAAUncertainty0to90;
 	}   
 	return sqrt(sys);
 }
 
-float systematicsPbPb(double pt, bool TAAhi = 1, double centL=0,double centH=100, double HLT=0)
+float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0,double centH=100, double HLT=0)
 {
-  if (!initialized && centL==0&&(centH==100||centH==90)) initialization(centL,centH);
-    if (!initialized && centL==0&&centH==10) initialization(centL,centH);
+  if(ptbinning&&centL==0&&centH==90) initialization(1,centL,centH);
+  if(!ptbinning)
+    {
+      if (!initialized && centL==0&&centH==90) initialization(0,centL,centH);
+      if (!initialized && centL==0&&centH==30) initialization(0,centL,centH);
+      if (!initialized && centL==30&&centH==90) initialization(0,centL,centH);
+    }
+  double sys=0;
+  
+  sys+= PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt))* 
+    PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt));
+  
+  sys+= PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt))* 
+    PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt));
+  
+  sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
+    PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
+  
+  sys+=PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt))*
+    PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt));
+  
+  sys+=PbPbTrackingEfficiency*PbPbTrackingEfficiency;
+  sys+=PbPbAlignment*PbPbAlignment;
+  sys+=PbPbLifetime*PbPbLifetime;
+  
+  sys+= PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt))*
+    PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt));
+  
+  sys+= PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt))*
+    PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt));
 
-	double sys=0;
-
-	sys+= PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt))* 
-		PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt));
-
-	sys+= PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt))* 
-		PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt));
-
-	sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
-		PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
-
-	sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
-
-	sys+=(PbPbTrackingEfficiency)*(PbPbTrackingEfficiency);
-	sys+=PbPbAlignment*PbPbAlignment;
-	sys+=PbPbLifetime*PbPbLifetime;
-
-	sys+= PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt))*
-		PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt));
-
-	sys+= PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt))*
-		PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt));
-
-	return sqrt(sys);
+  return sqrt(sys);
 }
 
 float systematicsPbPb_Correlated(double pt, bool TAAhi = 1, double centL=0,double centH=100, double HLT=0)
@@ -630,7 +679,7 @@ float systematicsPbPb_UnCorrelated(double pt, bool TAAhi = 1, double centL=0,dou
 	sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
 		PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
 
-	sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
+	//sys+=fPbPbPtShape->Eval(pt)*fPbPbPtShape->Eval(pt);
 
 	sys+= PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt))*
 		PbPbTagAndProbe->GetBinContent(PbPbTagAndProbe->FindBin(pt));

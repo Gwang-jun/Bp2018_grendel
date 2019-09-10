@@ -1,7 +1,7 @@
 void canvas1DhEff_PbPb()
 {
 //=========Macro generated from canvas: canvas1D/
-//=========  (Wed Jul 24 16:36:42 2019) by ROOT version 6.14/04
+//=========  (Tue Sep 10 13:11:49 2019) by ROOT version 6.16/00
    TCanvas *canvas1D = new TCanvas("canvas1D", "",0,0,600,600);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -40,26 +40,27 @@ void canvas1DhEff_PbPb()
    hemptyEff__1->GetZaxis()->SetLabelFont(42);
    hemptyEff__1->GetZaxis()->SetLabelSize(0.035);
    hemptyEff__1->GetZaxis()->SetTitleSize(0.035);
+   hemptyEff__1->GetZaxis()->SetTitleOffset(1);
    hemptyEff__1->GetZaxis()->SetTitleFont(42);
    hemptyEff__1->Draw("");
    Double_t xAxis1[8] = {5, 7, 10, 15, 20, 30, 50, 100}; 
    
    TH1D *hEff__2 = new TH1D("hEff__2","",7, xAxis1);
-   hEff__2->SetBinContent(1,0.0004153229);
-   hEff__2->SetBinContent(2,0.004195909);
-   hEff__2->SetBinContent(3,0.0233498);
-   hEff__2->SetBinContent(4,0.06718186);
-   hEff__2->SetBinContent(5,0.136143);
-   hEff__2->SetBinContent(6,0.2096156);
-   hEff__2->SetBinContent(7,0.2416709);
-   hEff__2->SetBinError(1,8.23838e-05);
-   hEff__2->SetBinError(2,0.0002464451);
-   hEff__2->SetBinError(3,0.0006086048);
-   hEff__2->SetBinError(4,0.001264789);
-   hEff__2->SetBinError(5,0.001818501);
-   hEff__2->SetBinError(6,0.002784902);
-   hEff__2->SetBinError(7,0.003428047);
-   hEff__2->SetEntries(18747.38);
+   hEff__2->SetBinContent(1,0.0006059292);
+   hEff__2->SetBinContent(2,0.004646073);
+   hEff__2->SetBinContent(3,0.03466422);
+   hEff__2->SetBinContent(4,0.09494888);
+   hEff__2->SetBinContent(5,0.1621302);
+   hEff__2->SetBinContent(6,0.2316657);
+   hEff__2->SetBinContent(7,0.258536);
+   hEff__2->SetBinError(1,8.430667e-05);
+   hEff__2->SetBinError(2,0.0002414448);
+   hEff__2->SetBinError(3,0.0007038122);
+   hEff__2->SetBinError(4,0.001444442);
+   hEff__2->SetBinError(5,0.001906975);
+   hEff__2->SetBinError(6,0.00285247);
+   hEff__2->SetBinError(7,0.003427036);
+   hEff__2->SetEntries(23683.61);
    hEff__2->SetStats(0);
    hEff__2->SetLineColor(2);
    hEff__2->SetMarkerColor(2);
@@ -68,16 +69,17 @@ void canvas1DhEff_PbPb()
    hEff__2->GetXaxis()->SetLabelFont(42);
    hEff__2->GetXaxis()->SetLabelSize(0.035);
    hEff__2->GetXaxis()->SetTitleSize(0.035);
+   hEff__2->GetXaxis()->SetTitleOffset(1);
    hEff__2->GetXaxis()->SetTitleFont(42);
    hEff__2->GetYaxis()->CenterTitle(true);
    hEff__2->GetYaxis()->SetLabelFont(42);
    hEff__2->GetYaxis()->SetLabelSize(0.035);
    hEff__2->GetYaxis()->SetTitleSize(0.035);
-   hEff__2->GetYaxis()->SetTitleOffset(0);
    hEff__2->GetYaxis()->SetTitleFont(42);
    hEff__2->GetZaxis()->SetLabelFont(42);
    hEff__2->GetZaxis()->SetLabelSize(0.035);
    hEff__2->GetZaxis()->SetTitleSize(0.035);
+   hEff__2->GetZaxis()->SetTitleOffset(1);
    hEff__2->GetZaxis()->SetTitleFont(42);
    hEff__2->Draw("same");
    TLatex *   tex = new TLatex(0.5,0.815,"Centrality 0-90%");
