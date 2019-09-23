@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
+
 float tpadr = 0.7;
 
 int _nBins = nBinsCent;
@@ -60,32 +61,65 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	double pti = 0.;
 	double pte = 300.;
 
-	TFile* file = new TFile(input.Data());  
-	TFile* fileeff = new TFile(efficiency.Data());
-	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
-	TH1F* hPtSigmahibin = (TH1F*)file->Get("hPt");
-	if(doDataCor != 1) hPtSigmahibin->Divide(hEff);
-	//hPtSigma->Scale(1./(2*lumi*BRchain));
+	//TFile* file = new TFile(input.Data());
+	//TFile* fileeff = new TFile(efficiency.Data());
 
-	hPtSigmahibin->Scale(1./(2*BRchain));
-	for(int k=0;k<_nBins;k++)
-	  {
-	    hPtSigmahibin->SetBinContent(k+1,hPtSigmahibin->GetBinContent(k+1)/TAA[k]);
-	    hPtSigmahibin->SetBinError(k+1,hPtSigmahibin->GetBinError(k+1)/TAA[k]);
-	  }
+
+        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_binned_newpt_Cent30-90.root");
+        TFile* fileeff1 = new TFile("unbinnedfiles/MCstudiesPbPb_newpt_Cent30-90.root");
+        TH1F* hPtSigmadiff1 = (TH1F*)file1->Get("hPt");
+        TH1F* hEff1 = (TH1F*)fileeff1->Get("hEff");
+        hPtSigmadiff1->Divide(hEff1);
+
+        double ptwidth[nBins];
+        double coryield1 = 0.0;
+        double coryieldErr1 = 0.0;
 
 	/*
-	int _nBins = hPtSigma->GetNbinsX();
-	double _ptBins[1000];
-	if(_nBins > 1000){
-		printf("UPDATE BIN NUMBER BUFFER\n");
-		return;
-	}
-	for (int i = 0; i < _nBins; i++){
-		_ptBins[i] = hPtSigma->GetBinLowEdge(i+1);
-	}
-	_ptBins[_nBins] = hPtSigma->GetBinLowEdge(_nBins) + hPtSigma->GetBinWidth(_nBins);
+        TFile* file2 = new TFile("unbinnedfiles/yields_Bp_binned_newpt_Cent30-90.root");
+        TFile* fileeff2 = new TFile("unbinnedfiles/MCstudiesPbPb_newpt_Cent30-90.root");
+        TH1F* hPtSigmadiff2 = (TH1F*)file2->Get("hPt");
+        TH1F* hEff2 = (TH1F*)fileeff2->Get("hEff");
+        hPtSigmadiff2->Divide(hEff2);
+        double coryield2 = 0.0;
+        double coryieldErr2 = 0.0;
 	*/
+
+	double taa=1.705;
+	
+	hPtSigmadiff1->Scale(1./(2*taa*BRchain));
+	
+        for(int k=0;k<nBins;k++) //must use differential pt bins that are used to calculate inclusive pt corrected yield
+          {
+            ptwidth[k] = (ptBins[k+1]-ptBins[k])/(ptBins[nBins]-ptBins[0]);
+	    std::cout<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1)<<std::endl;
+	    std::cout<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)<<std::endl;
+	    coryield1 += ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1);
+            coryieldErr1 += ptwidth[k]*ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)*hPtSigmadiff1->GetBinError(k+1);
+            //coryield2 += ptwidth[k]*hPtSigmadiff2->GetBinContent(k+1);
+            //coryieldErr2 += ptwidth[k]*ptwidth[k]*hPtSigmadiff2->GetBinError(k+1)*hPtSigmadiff2->GetBinError(k+1);
+          }
+	
+
+        TH1D* hPtSigmahibin = new TH1D("hPtSigma","",nBinsCent,ptBinsCent);
+        //hPtSigmahibin->SetBinContent(1,hPtSigmadiff1->GetBinContent(1));
+        //hPtSigmahibin->SetBinError(1,hPtSigmadiff1->GetBinError(1));
+        //hPtSigmahibin->SetBinContent(2,hPtSigmadiff1->GetBinContent(2));
+        //hPtSigmahibin->SetBinError(2,hPtSigmadiff1->GetBinError(2));
+	hPtSigmahibin->SetBinContent(1,coryield1);
+        hPtSigmahibin->SetBinError(1,sqrt(coryieldErr1));
+        //hPtSigmahibin->SetBinContent(2,coryield2);
+        //hPtSigmahibin->SetBinError(2,sqrt(coryieldErr2));
+
+        //hPtSigmahibin->Scale(1./(2*BRchain));
+        for(int k=0;k<nBinsCent;k++)
+          {
+            //hPtSigmahibin->SetBinContent(k+1,hPtSigmahibin->GetBinContent(k+1)/TAA[k]);
+            //hPtSigmahibin->SetBinError(k+1,hPtSigmahibin->GetBinError(k+1)/TAA[k]);
+          }
+
+        for(int k=0;k<nBinsCent;k++){
+	printf("Cent bin %.0f-%.0f Corrected Yield: %f Err: %f\n", ptBinsCent[k], ptBinsCent[k+1], hPtSigmahibin->GetBinContent(k+1), hPtSigmahibin->GetBinError(k+1));}
 
 	Double_t xr[_nBins], xrlow[_nBins], xrhigh[_nBins], ycross[_nBins],ycrossstat[_nBins],ycrosssysthigh[_nBins],ycrosssystlow[_nBins], yFONLL[_nBins];
 	Double_t yratiocrossFONLL[_nBins], yratiocrossFONLLstat[_nBins], yratiocrossFONLLsysthigh[_nBins], yratiocrossFONLLsystlow[_nBins];
@@ -131,7 +165,7 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 
 	}
 
-	TH1F* hPtSigmaref = new TH1F("hPtSigma","",_nBins,mod_ptBins);
+	TH1F* hPtSigmaref = new TH1F("hPtSigmaref","",_nBins,mod_ptBins);
 	double hPtSigmarefcent[_nBins], hPtSigmareferror[_nBins];
 
         for(int i=0;i<_nBins;i++)
@@ -146,8 +180,8 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	    ycrosssystlow[i]=ycrosssystlowhibin[_nBins-i-1];   
           }
 	
-	TGraphAsymmErrors* hPtSigma = new TGraphAsymmErrors(_nBins,apt,hPtSigmarefcent,aptl,aptl,hPtSigmareferror,hPtSigmareferror);
-	hPtSigma->SetName("hPtSigma");
+        TGraphAsymmErrors* hPtSigma = new TGraphAsymmErrors(_nBins,apt,hPtSigmarefcent,aptl,aptl,hPtSigmareferror,hPtSigmareferror);
+        hPtSigma->SetName("hPtSigma");
 
 	//TGraphAsymmErrors* gaeCrossSyst = new TGraphAsymmErrors(_nBins,xr,ycross,xrlow,xrhigh,ycrosssystlow,ycrosssysthigh);
 	TGraphAsymmErrors* gaeCrossSyst = new TGraphAsymmErrors(_nBins,apt,ycross,aptl,aptl,ycrosssystlow,ycrosssysthigh);
@@ -205,7 +239,7 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 		pSigma->cd();
 	}
 
-	Float_t yaxisMin=1.e+5,yaxisMax=1.e+8;
+	Float_t yaxisMin=1.e+5,yaxisMax=1.e+7;
 	if(plotFONLL) yaxisMin=1.e+3;
 
 	//TH2F* hemptySigma=new TH2F("hemptySigma","",50,_ptBins[0]-5.,_ptBins[_nBins]+5.,10.,yaxisMin,yaxisMax);  
@@ -450,11 +484,11 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	hemptyEff->Draw();
 	cEff->cd();
 	hemptyEff->Draw();
-	hEff->SetLineWidth(2);
-	hEff->SetLineColor(1);
-	hEff->SetMarkerStyle(20);
-	hEff->SetMarkerSize(1.2);
-	hEff->Draw("same");
+	//hEff->SetLineWidth(2);
+	//hEff->SetLineColor(1);
+	//hEff->SetMarkerStyle(20);
+	//hEff->SetMarkerSize(1.2);
+	//hEff->Draw("same");
 	if(!isPbPb) cEff->SaveAs(Form("%s/efficiency%s%s.pdf",outplotf.Data(),label.Data(),_postfix.Data()));
 	else cEff->SaveAs(Form("%s/efficiency%s_%.0f_%.0f%s.pdf",outplotf.Data(),label.Data(),centMin,centMax,_postfix.Data()));
 	if(!isPbPb) cEff->SaveAs(Form("%s/efficiency%s%s.png",outplotf.Data(),label.Data(),_postfix.Data()));
@@ -462,18 +496,15 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 
 	TFile *outputfile=new TFile(outputplot.Data(),"recreate");
 	outputfile->cd();
-	gaeCrossSyst->Write();
+	//gaeCrossSyst->Write();
 	//gaeRatioCrossFONLLstat->Write();
-	gaeBplusReference->Write();
-	hPtSigma->Write();
+	//gaeBplusReference->Write();
+	//hPtSigma->Write();
+	hPtSigmahibin->Write();
 	//gaeRatioCrossFONLLstat->Write();
 	//gaeRatioCrossFONLLsyst->Write();
 	//gaeRatioCrossFONLLunity->Write();
-	hEff->Write();
-
-
-
-
+	//hEff->Write();
 
 }
 

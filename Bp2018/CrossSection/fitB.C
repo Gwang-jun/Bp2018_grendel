@@ -1,6 +1,7 @@
 #include "uti.h"
 #include "parameters.h"
 #include "TF1.h"
+#include <TFitResultPtr.h>
 
 Double_t setparam0=100.;
 Double_t setparam1=5.28;
@@ -16,6 +17,7 @@ Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 TString weight;
 TString weightgen;
 TString weightdata;
+TString weightdataBgenpt;
 TString seldata;
 TString selmc;
 TString selmceff;
@@ -80,7 +82,12 @@ TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax, int isMC,bool, TF1
 //std::cout<<"NP parameter 0: "<<NPpar[0]<<std::endl;
 //std::cout<<"NP parameter 1: "<<NPpar[1]<<std::endl;
  
- weightdata="1";
+//weightdata="2.39475e-02-9.02081e-03*Bpt+9.31757e-04*Bpt*Bpt-1.37827e-05*Bpt*Bpt*Bpt";
+//weightdata="TMath::Exp(3.11695e-08-5.16020e-02*Bpt+2.69860e-03*Bpt*Bpt-3.06583e-05*Bpt*Bpt*Bpt+4.61374e+01/Bpt)";
+ weightdata="(3.89345e+00+TMath::Exp(-7.53556e-01*(Bpt-1.55403e+01))+TMath::Exp(-1.54494e-01*(Bpt-2.98192e+01)))";
+ //weightdata="1";
+ //weightdataBgenpt="(3.89345e+00+TMath::Exp(-7.53556e-01*(Bgenpt-1.55403e+01))+TMath::Exp(-1.54494e-01*(Bgenpt-2.98192e+01)))";
+ weightdataBgenpt="1";
  if(!isPbPb)
    {
      weightgen="pthatweight*(0.599212+-0.020703*Gpt+0.003143*Gpt*Gpt+-0.000034*Gpt*Gpt*Gpt)";
@@ -88,16 +95,10 @@ TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax, int isMC,bool, TF1
    }
  else
    {
-     //weightgen="pthatweight*(0.715021+0.039896*Gpt-0.000834*Gpt*Gpt+0.000006*Gpt*Gpt*Gpt)"; // private MC
-     //weight="pthatweight*Ncoll*(1.034350*TMath::Exp(-0.000844*(PVz+3.502992)*(PVz+3.502992)))*(0.715021+0.039896*Bgenpt-0.000834*Bgenpt*Bgenpt+0.000006*Bgenpt*Bgenpt*Bgenpt)"; // private MC
-     weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
-     weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
-     //weightgen="pthatweight*((2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308)";
-     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308)";
-     //weightgen="pthatweight*(0.889175+0.000791*Gpt+0.000015*Gpt*Gpt)";
-     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(0.889175+0.000791*Bgenpt+0.000015*Bgenpt*Bgenpt)";
-     //weightgen="pthatweight*(0.094376+0.028350*Gpt+-0.000225*Gpt*Gpt+5.369348/Gpt)";
-     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(0.094376+0.028350*Bgenpt+-0.000225*Bgenpt*Bgenpt+5.369348/Bgenpt)";
+     //weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
+     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
+     weightgen="pthatweight*(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+     weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
    }
 
 std::cout<<"we are using weight="<<weight<<std::endl;
@@ -287,18 +288,15 @@ void getNPFnPar(TString npfname, float par[]){
 
   TH1D* h = new TH1D(Form("h-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
   TH1D* hMCSignal = new TH1D(Form("hMCSignal-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
-  
-  //TString iNP="7.26667e+00*TMath::Gaus(x,5.10472e+00,2.63158e-02)/(sqrt(2*3.14159)*2.63158e-02)+4.99089e+01*TMath::Gaus(x,4.96473e+00,9.56645e-02)/(sqrt(2*3.14159)*9.56645e-02)+3.94417e-01*(3.74282e+01*TMath::Gaus(x,5.34796e+00,3.11510e-02)+1.14713e+01*TMath::Gaus(x,5.42190e+00,1.00544e-01))";
-  //TString iNP=Form("TMath::Erf((x-%f)/%f)+1", NPpar[0], NPpar[1]);
   TString iNP = npfit;
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*TMath::Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*("+iNP+")");
   f->SetNpx(5000);
   f->SetLineWidth(5);
   
-  if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(1/%s)",weight.Data(),seldata.Data(),ptmin,ptmax,weightdata.Data())); //Closure
-  //if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)*(1/%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));
-  else nt->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)*(1/%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
-  ntMC->Project(Form("hMCSignal-%d",count),"Bmass",Form("(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(1/%s)",selmc.Data(),ptmin,ptmax,weightdata.Data()));
+  //if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(1/%s)",weight.Data(),seldata.Data(),ptmin,ptmax,weightdata.Data())); //Closure
+  if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptmin,ptmax));
+  else nt->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)*(%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
+  ntMC->Project(Form("hMCSignal-%d",count),"Bmass",Form("(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(%s)",selmc.Data(),ptmin,ptmax,weightdataBgenpt.Data()));
 
   clean0(h);
   
@@ -307,7 +305,7 @@ void getNPFnPar(TString npfname, float par[]){
   f->SetParLimits(8,0.01,0.05);
   f->SetParLimits(7,0,1);
   f->SetParLimits(5,0,1e4);
-  f->SetParLimits(0,0,1e6);
+  f->SetParLimits(0,0,1e7);//1e7
   f->SetParLimits(1,5.25,5.30);
   
   //Do the signal fit first
@@ -318,6 +316,7 @@ void getNPFnPar(TString npfname, float par[]){
   f->SetParameter(8,setparam3);
   //f->FixParameter(1,fixparam1);
 
+  /*
   f->FixParameter(3,0);
   f->FixParameter(4,0);
   f->FixParameter(5,0);
@@ -349,18 +348,15 @@ void getNPFnPar(TString npfname, float par[]){
   
   printf("Fixed para.:\n");
   printf("%f, %f, %f\n", f->GetParameter(2), f->GetParameter(7), f->GetParameter(8));
+  */
+
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   //f->ReleaseParameter(1);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-  h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-  if(weightdata != "1"){
-    h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-    h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-    h->Fit(Form("f%d",count),"m","",minhisto,maxhisto);
-  }
+  h->Fit(Form("f%d",count),"L m S","",minhisto,maxhisto);
 
   TF1 *background = new TF1(Form("background%d",count),"[0]+[1]*x");
   background->SetParameter(0,f->GetParameter(3));
@@ -434,9 +430,52 @@ void getNPFnPar(TString npfname, float par[]){
   mass->Draw("same");
   f->Draw("same");
   c->RedrawAxis();
+
   
+  TF1 *massdiff0 = new TF1(Form("fmassdiff0%d",count),"([2]*TMath::Gaus(x,[0],[1])/(sqrt(2*3.14159)*[1])+(1-[2])*TMath::Gaus(x,[0],[3])/(sqrt(2*3.14159)*[3]))");
+  massdiff0->SetParameters(f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
+  massdiff0->SetParError(0,f->GetParError(1));
+  massdiff0->SetParError(1,f->GetParError(2));
+  massdiff0->SetParError(2,f->GetParError(7));
+  massdiff0->SetParError(3,f->GetParError(8));
+
+
+  TF1 *massdiff7 = new TF1(Form("fmassdiff7%d",count),"[0]*(TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])-TMath::Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))");
+  massdiff7->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(8));
+  massdiff7->SetParError(0,f->GetParError(0));
+  massdiff7->SetParError(1,f->GetParError(1));
+  massdiff7->SetParError(2,f->GetParError(2));
+  massdiff7->SetParError(3,f->GetParError(8));
+
+
+  TF1 *massdiff1 = new TF1(Form("fmassdiff1%d",count),"[0]*([3]*(x-[1])/([2]*[2])*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[3])*(x-[1])/([4]*[4])*TMath::Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
+  massdiff1->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
+  massdiff1->SetParError(0,f->GetParError(0));
+  massdiff1->SetParError(1,f->GetParError(1));
+  massdiff1->SetParError(2,f->GetParError(2));
+  massdiff1->SetParError(3,f->GetParError(7));
+  massdiff1->SetParError(4,f->GetParError(8));
+
+
+  TF1 *massdiff2 = new TF1(Form("fmassdiff2%d",count),"[0]*([3]*((x-[1])*(x-[1])/([2]*[2]*[2])-1.0/[2])*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2]))");
+  massdiff2->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7));
+  massdiff2->SetParError(0,f->GetParError(0));
+  massdiff2->SetParError(1,f->GetParError(1));
+  massdiff2->SetParError(2,f->GetParError(2));
+  massdiff1->SetParError(3,f->GetParError(7));
+
+
+  TF1 *massdiff8 = new TF1(Form("fmassdiff8%d",count),"[0]*((1-[2])*((x-[1])*(x-[1])/([3]*[3]*[3])-1.0/[3])*TMath::Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))");
+  massdiff8->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(7),f->GetParameter(8));
+  massdiff8->SetParError(0,f->GetParError(0));
+  massdiff8->SetParError(1,f->GetParError(1));
+  massdiff8->SetParError(2,f->GetParError(7));
+  massdiff8->SetParError(3,f->GetParError(8));
+  
+
   yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
-  yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+  //yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+  yieldErr = (massdiff0->Integral(minhisto,maxhisto)*mass->GetParError(0)+massdiff7->Integral(minhisto,maxhisto)*mass->GetParError(7)+massdiff1->Integral(minhisto,maxhisto)*mass->GetParError(1)+massdiff2->Integral(minhisto,maxhisto)*mass->GetParError(2)+massdiff8->Integral(minhisto,maxhisto)*mass->GetParError(8))/binwidthmass;
   printf("p_t bin %.0f-%.0f     yield: %f     yieldErr: %f\n", ptmin, ptmax, yield, yieldErr);
   
   Double_t Signal = mass->Integral(5.19932,5.35932)/binwidthmass; //B+ mass_pdg=5.27932GeV, signal region = pm 0.08GeV
@@ -594,12 +633,12 @@ void getNPFnPar(TString npfname, float par[]){
   h->Write();
   hMCSignal->Write();
   
-  TString _postfix = "%";
-  if(weightdata!="1") _postfix = "_EFFCOR";
+  TString postfix = "%";
+  //if(weightdata!="1") postfix = "EFFCOR";
   if(isPbPb && isMC==0)
   {
-    c->SaveAs(Form("plotFits/AN_data_PbPb_pt%.0f-%.0f_cent%.0f-%.0f.png",ptmin,ptmax,centmin,centmax));
-    c->SaveAs(Form("plotFits/AN_data_PbPb_pt%.0f-%.0f_cent%.0f-%.0f.pdf",ptmin,ptmax,centmin,centmax));
+    c->SaveAs(Form("plotFits/weighted_AN_data_PbPb_pt%.0f-%.0f_cent%.0f-%.0f.png",ptmin,ptmax,centmin,centmax));
+    c->SaveAs(Form("plotFits/weighted_AN_data_PbPb_pt%.0f-%.0f_cent%.0f-%.0f.pdf",ptmin,ptmax,centmin,centmax));
   }
   if(isPbPb && isMC==1)
     {

@@ -6,9 +6,8 @@ void ClosureTest(TString inputfile="",TString label="")
 {
   gStyle->SetOptStat(0);
 
-  
-  TFile *fyield = new TFile(inputfile.Data());
 
+  TFile *fyield = new TFile(inputfile.Data());
   TH1D *hPtCor = (TH1D*)fyield->Get("hPtCor");
   TH1D *hPtGen = (TH1D*)fyield->Get("hPtGen");
 
@@ -44,15 +43,16 @@ void ClosureTest(TString inputfile="",TString label="")
   hClosure->SetLineColor(1);
   hClosure->Draw("same");
   canvas->SaveAs(Form("canvasClosure%s.pdf",label.Data()));
-  
+
 
   /*
   TFile *fyield = new TFile(inputfile.Data());
+  //TFile *fyield = new TFile("ptshape/BDT/yields_Bp_binned_pt.root");
   TFile *fEff = new TFile("ROOTfiles/MCstudiesPbPb.root");
-
+  
   TH1D *hPt = (TH1D*)fyield->Get("hPt");
-  TH1D *hEff = (TH1D*)fEff->Get("hEffdef");
-  TH1D *hPtGen = (TH1D*)fEff->Get("hPtGen");
+  TH1D *hEff = (TH1D*)fEff->Get("hEff");
+  TH1D *hPtGen = (TH1D*)fyield->Get("hPtGen");
 
   hPt->Sumw2();
   hEff->Sumw2();

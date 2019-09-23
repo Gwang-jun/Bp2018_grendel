@@ -39,7 +39,7 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   VARNUM = varnum;
 
   cutvarname[0] = "BDT";
-  cutvar[0] = "BDT_5_7";
+  cutvar[0] = "BDT_50_100";
 
   /*
   cutvarname[0] = "dls3D";
@@ -87,8 +87,11 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
     }
   else
     {
-      weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
-      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
+      weightgen="pthatweight*(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenp\
+t)";
+      //weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
+      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
     }
 
   std::cout<<"we are using weight="<<weight<<std::endl;
@@ -125,6 +128,8 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
 
   cut = Form("%s%s",cut.Data(),cutforothers.Data());
 
+  //optimal cut
+
   TString cutforref = "";
   cutforref = Form("%s&&(%s>%f)",cut.Data(),cutvar[varnum].Data(),cutvarref[varnum]);
   if(!isPbPb)
@@ -157,8 +162,39 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   Ratio_ref = yieldData_ref/yieldMC_ref;
   RatioErr_ref = Ratio_ref*sqrt((yieldErrData_ref/yieldData_ref)*(yieldErrData_ref/yieldData_ref)+(yieldErrMC_ref/yieldMC_ref)*(yieldErrMC_ref/yieldMC_ref));
 
-  //RatioErrData_ref = sqrt(2)*yieldErrData_ref/yieldData_ref;
-  //RatioErrMC_ref = sqrt(2)*yieldErrMC_ref/yieldMC_ref;
+  //no cut
+
+  TString cutfornocut = "";
+  cutfornocut = Form("%s&&(%s>%f)",cut.Data(),cutvar[varnum].Data(),nocut[varnum]);
+  if(!isPbPb)
+    {
+      seldata = Form("%s&&%s",trgselection.Data(),cutfornocut.Data());
+      selmc = Form("%s&&%s",trgselection.Data(),cutfornocut.Data());
+    }
+  else
+    {
+      seldata = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cutfornocut.Data(),hiBinMin,hiBinMax);
+      selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cutfornocut.Data(),hiBinMin,hiBinMax);
+    }
+
+  std::cout<<""<<std::endl;
+  std::cout<<"processing Data reference (no cut)"<<std::endl;
+  std::cout<<""<<std::endl;
+
+  fData_nocut = fit(nt,ntMC,_ptBins[0],_ptBins[1],0,isPbPb,totalmass,centmin,centmax,npfit);
+  yieldData_nocut = yield;
+  yieldErrData_nocut = yieldErr;
+
+  std::cout<<""<<std::endl;
+  std::cout<<"processing MC reference (no cut)"<<std::endl;
+  std::cout<<""<<std::endl;
+
+  fMC_nocut = fit(ntMC,ntMC,_ptBins[0],_ptBins[1],1,isPbPb,totalmass,centmin,centmax,npfit);
+  yieldMC_nocut = yield;
+  yieldErrMC_nocut = yieldErr;
+
+  Ratio_nocut = yieldData_nocut/yieldMC_nocut;
+  RatioErr_nocut = Ratio_nocut*sqrt((yieldErrData_nocut/yieldData_nocut)*(yieldErrData_nocut/yieldData_nocut)+(yieldErrMC_nocut/yieldMC_nocut)*(yieldErrMC_nocut/yieldMC_nocut));
 
   TH1D * cutvarhis = new TH1D(Form("cutvarhis_%s",cutvarname[varnum].Data()),"",ncutvar,cutvarmin[varnum]-0.5*cutspacing,cutvarmax[varnum]+0.5*cutspacing);
   cutvarhis->GetXaxis()->SetTitle(Form("%s",cutvarname[varnum].Data()));
@@ -210,6 +246,8 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
      RatioErr_var[i] = Ratio_var[i]*sqrt((yieldErrData[i]/yieldData[i])*(yieldErrData[i]/yieldData[i])+(yieldErrMC[i]/yieldMC[i])*(yieldErrMC[i]/yieldMC[i]));
 
      DoubleRatio[i] = Ratio_var[i]/Ratio_ref;
+     //if((cutvarmin[varnum]+i*cutspacing<cutvarref[varnum])) DoubleRatioErr[i] = DoubleRatio[i]*sqrt((RatioErr_var[i]/Ratio_var[i])*(RatioErr_var[i]/Ratio_var[i])+(RatioErr_ref/Ratio_ref)*(RatioErr_ref/Ratio_ref)-2*RatioErr_var[i]*RatioErr_var[i]/Ratio_var[i]/Ratio_ref);
+     //if((cutvarmin[varnum]+i*cutspacing>=cutvarref[varnum])) DoubleRatioErr[i] = DoubleRatio[i]*sqrt((RatioErr_var[i]/Ratio_var[i])*(RatioErr_var[i]/Ratio_var[i])+(RatioErr_ref/Ratio_ref)*(RatioErr_ref/Ratio_ref)-2*RatioErr_ref*RatioErr_ref/Ratio_var[i]/Ratio_ref);
      DoubleRatioErr[i] = sqrt(TMath::Abs(RatioErr_var[i]*RatioErr_var[i]-RatioErr_ref*RatioErr_ref))/Ratio_ref;
      //DoubleRatioErr[i] = DoubleRatio[i]*sqrt(TMath::Abs((RatioErr_var[i]/Ratio_var[i])*(RatioErr_var[i]/Ratio_var[i])-(RatioErr_ref/Ratio_ref)*(RatioErr_ref/Ratio_ref)));
 
@@ -231,26 +269,31 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
      cutvarhis->SetBinContent(i+1,DoubleRatio[i]);
      cutvarhis->SetBinError(i+1,DoubleRatioErr[i]);
      
-     if(TMath::Abs(DoubleRatio[i]-1.0)>maxdeviation) maxdeviation = TMath::Abs(DoubleRatio[i]-1.0);
+     //if(TMath::Abs(DoubleRatio[i]-1.0)>maxdeviation && (cutvarmin[varnum]+i*cutspacing<cutvarref[varnum])) maxdeviation = TMath::Abs(DoubleRatio[i]-1.0);
    }
   
-  std::cout<<"Maximum deviation from unity = "<<maxdeviation*100<<"%"<<std::endl;
-  
+  DoubleRatio_nocut = Ratio_nocut/Ratio_ref;
+  DoubleRatioErr_nocut = sqrt(TMath::Abs(RatioErr_nocut*RatioErr_nocut-RatioErr_ref*RatioErr_ref))/Ratio_ref;
+  maxdeviation = TMath::Abs(DoubleRatio_nocut-1.0);
+
+  std::cout<<"Maximum deviation from unity = "<<maxdeviation*100<<"%"<<std::endl;  
   
   double fmax, fmin;
   fmax = cutvarmax[varnum];
   fmin = -1.0;
   //if(varnum==1) fmin = -1.0;
   //else fmin = 0.0;
-  
+
+  /*
   TF1* f = new TF1("f",Form("1.0+[0]*(x-%f)",cutvarref[varnum]),fmin,cutvarref[varnum]);
-  f->SetParLimits(0,-100,100);
+  f->SetParameter(0,0);
+  f->SetParLimits(0,-10,10);
   cutvarhis->Fit(f,"R");
   double intercept = 1.0-(f->GetParameter(0))*(cutvarref[varnum]);
   double slope = (f->GetParameter(0));
   
   std::cout<<"Linear Fit Function = "<<intercept<<"+"<<slope<<"*"<<cutvarname[varnum]<<std::endl;
-
+  */
 
   TFile* outputroot = new TFile(Form("plotCutVar/cutvariation_%s_%s_pt%.0f-%.0f.root",cutvarname[varnum].Data(),collsyst.Data(),_ptBins[0],_ptBins[1]),"recreate");
   outputroot->cd();
@@ -260,14 +303,32 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   TCanvas* c0 = new TCanvas("","",600,600);
   c0->cd();
   cutvarhis->Draw("ep");
-  f->Draw("same");
+  //f->Draw("same");
   //c0->RedrawAxis();
 
-  TLine* vline = new TLine(cutvarref[varnum],0.0,cutvarref[varnum],1.0);
-  vline->SetLineWidth(1);
-  vline->SetLineStyle(2);
-  vline->SetLineColor(kGreen);
-  vline->Draw("same");
+  TLine* vline_ref = new TLine(cutvarref[varnum],0.0,cutvarref[varnum],1.0);
+  vline_ref->SetLineWidth(1);
+  vline_ref->SetLineStyle(2);
+  vline_ref->SetLineColor(kGreen);
+  vline_ref->Draw("same");
+
+  TLine* hline_ref = new TLine(cutvarmin[varnum]-0.5*cutspacing,1.0,cutvarref[varnum],1.0);
+  hline_ref->SetLineWidth(1);
+  hline_ref->SetLineStyle(2);
+  hline_ref->SetLineColor(kGreen);
+  hline_ref->Draw("same");
+  
+  TLine* vline_nocut = new TLine(nocut[varnum],0.0,nocut[varnum],DoubleRatio_nocut);
+  vline_nocut->SetLineWidth(1);
+  vline_nocut->SetLineStyle(2);
+  vline_nocut->SetLineColor(kRed);
+  vline_nocut->Draw("same");
+
+  TLine* hline_nocut = new TLine(cutvarmin[varnum]-0.5*cutspacing,DoubleRatio_nocut,nocut[varnum],DoubleRatio_nocut);
+  hline_nocut->SetLineWidth(1);
+  hline_nocut->SetLineStyle(2);
+  hline_nocut->SetLineColor(kRed);
+  hline_nocut->Draw("same");
 
   TLatex* texcms = new TLatex(0.22,0.87,"CMS");
   texcms->SetNDC();
@@ -310,22 +371,24 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   tex->SetLineWidth(2);
   tex->Draw();
 
-  double cutvarsyst = 100*(f->GetParameter(0))*(fmin-cutvarref[varnum]);  
-  std::cout<<"cutvarsyst="<<cutvarsyst<<std::endl;
+  //double cutvarsyst = 100*(f->GetParameter(0))*(fmin-cutvarref[varnum]);  
+  //std::cout<<"cutvarsyst="<<cutvarsyst<<std::endl;
 
-  tex = new TLatex(0.46,0.730,Form("Maximum deviation from unity=%.2f%s",maxdeviation*100,texper.Data()));
+  tex = new TLatex(0.46,0.730,Form("Deviation at effective no cut=%.2f%s",maxdeviation*100,texper.Data()));
   tex->SetNDC();
   tex->SetTextFont(42);
   tex->SetTextSize(0.030);
   tex->SetLineWidth(2);
   tex->Draw();
 
+  /*
   tex = new TLatex(0.46,0.700,Form("Deviation from unity at no cut=%.2f%s",cutvarsyst,texper.Data()));  
   tex->SetNDC();
   tex->SetTextFont(42);
   tex->SetTextSize(0.030);
   tex->SetLineWidth(2);
   tex->Draw();
+  */
 
   c0->SaveAs(Form("plotCutVar/cutvariation_%s_%s_pt%.0f-%.0f.png",cutvarname[varnum].Data(),collsyst.Data(),_ptBins[0],_ptBins[1]));
   c0->SaveAs(Form("plotCutVar/cutvariation_%s_%s_pt%.0f-%.0f.pdf",cutvarname[varnum].Data(),collsyst.Data(),_ptBins[0],_ptBins[1]));

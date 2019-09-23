@@ -1,6 +1,6 @@
 #!/bin/bash
 #source clean.sh
-CENTPbPbMIN=30
+CENTPbPbMIN=0
 CENTPbPbMAX=90
 #Central point of the analysis
 
@@ -76,7 +76,7 @@ OUTPUTFILEPbPbMC="ROOTfiles/mc_PbPb.root"
 NPFIT_PbPb="701.019629*TMath::Erf((x-5.140349)/-0.035471)+701.019629+16.946432*TMath::Gaus(x,5.343914,0.040000)/(sqrt(2*3.14159)*0.040000)"
 
 if [ $DOANALYSISPbPb_CUTVAR -eq 1 ]; then      
-g++ fitB_cutvar_cent.C $(root-config --cflags --libs) -g -o fitB_cutvar_cent3.exe
-./fitB_cutvar_cent3.exe 1 "$INPUTDATAPbPb"  "$INPUTMCPbPb"  "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   1   "$ISDOWEIGHTPbPb"   "$LABELPbPb"  "$OUTPUTFILEPbPb" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX" 0
-rm fitB_cutvar_cent3.exe
+g++ fitB_cutvar_cent.C $(root-config --cflags --libs) -g -o fitB_cutvar_cent1.exe
+./fitB_cutvar_cent1.exe 1 "$INPUTDATAPbPb"  "$INPUTMCPbPb"  "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   1   "$ISDOWEIGHTPbPb"   "$LABELPbPb"  "$OUTPUTFILEPbPb" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX" 0
+rm fitB_cutvar_cent1.exe
 fi

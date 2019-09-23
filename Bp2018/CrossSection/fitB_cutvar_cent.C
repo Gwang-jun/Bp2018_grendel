@@ -41,10 +41,10 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   cutvarname = "BDT";
   cutvar[0] = "BDT_5_7";
   cutvar[1] = "BDT_7_10";
-  cutvar[2] = "BDT_10_15";
-  cutvar[3] = "BDT_15_20";
-  cutvar[4] = "BDT_20_30";
-  cutvar[5] = "BDT_30_50";
+  //cutvar[2] = "BDT_10_15";
+  //cutvar[3] = "BDT_15_20";
+  //cutvar[4] = "BDT_20_30";
+  //cutvar[5] = "BDT_30_50";
 
   /*
   cutvarname[0] = "dls3D";
@@ -141,12 +141,13 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
 
   cutforothers1 = Form("%s&&(%s>%f)",cutrefforothers1.Data(),cutvar[0].Data(),cutvarref1[0]);
   cutforothers2 = Form("%s&&(%s>%f)",cutrefforothers2.Data(),cutvar[1].Data(),cutvarref2[0]);
-  cutforothers3 = Form("%s&&(%s>%f)",cutrefforothers3.Data(),cutvar[2].Data(),cutvarref3[0]);
-  cutforothers4 = Form("%s&&(%s>%f)",cutrefforothers4.Data(),cutvar[3].Data(),cutvarref4[0]);
-  cutforothers5 = Form("%s&&(%s>%f)",cutrefforothers5.Data(),cutvar[4].Data(),cutvarref5[0]);
-  cutforothers6 = Form("%s&&(%s>%f)",cutrefforothers6.Data(),cutvar[5].Data(),cutvarref6[0]);
+  //cutforothers3 = Form("%s&&(%s>%f)",cutrefforothers3.Data(),cutvar[2].Data(),cutvarref3[0]);
+  //cutforothers4 = Form("%s&&(%s>%f)",cutrefforothers4.Data(),cutvar[3].Data(),cutvarref4[0]);
+  //cutforothers5 = Form("%s&&(%s>%f)",cutrefforothers5.Data(),cutvar[4].Data(),cutvarref5[0]);
+  //cutforothers6 = Form("%s&&(%s>%f)",cutrefforothers6.Data(),cutvar[5].Data(),cutvarref6[0]);
 
-  TString cutref = Form("%s&&(%s||%s||%s||%s||%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data(),cutforothers3.Data(),cutforothers4.Data(),cutforothers5.Data(),cutforothers6.Data());
+  //TString cutref = Form("%s&&(%s||%s||%s||%s||%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data(),cutforothers3.Data(),cutforothers4.Data(),cutforothers5.Data(),cutforothers6.Data());
+  TString cutref = Form("%s&&(%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data());
 
   if(!isPbPb)
     {
@@ -197,12 +198,13 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
 
      cutforothers1 = Form("%s&&(BDT_5_7>%f)",cutrefforothers1.Data(),cutvarref1[0]+(-nleft+i)*cutspacing);
      cutforothers2 = Form("%s&&(BDT_7_10>%f)",cutrefforothers2.Data(),cutvarref2[0]+(-nleft+i)*cutspacing);
-     cutforothers3 = Form("%s&&(BDT_10_15>%f)",cutrefforothers3.Data(),cutvarref3[0]+(-nleft+i)*cutspacing);
-     cutforothers4 = Form("%s&&(BDT_15_20>%f)",cutrefforothers4.Data(),cutvarref4[0]+(-nleft+i)*cutspacing);
-     cutforothers5 = Form("%s&&(BDT_20_30>%f)",cutrefforothers5.Data(),cutvarref5[0]+(-nleft+i)*cutspacing);
-     cutforothers6 = Form("%s&&(BDT_30_50>%f)",cutrefforothers6.Data(),cutvarref6[0]+(-nleft+i)*cutspacing);
+     //cutforothers3 = Form("%s&&(BDT_10_15>%f)",cutrefforothers3.Data(),cutvarref3[0]+(-nleft+i)*cutspacing);
+     //cutforothers4 = Form("%s&&(BDT_15_20>%f)",cutrefforothers4.Data(),cutvarref4[0]+(-nleft+i)*cutspacing);
+     //cutforothers5 = Form("%s&&(BDT_20_30>%f)",cutrefforothers5.Data(),cutvarref5[0]+(-nleft+i)*cutspacing);
+     //cutforothers6 = Form("%s&&(BDT_30_50>%f)",cutrefforothers6.Data(),cutvarref6[0]+(-nleft+i)*cutspacing);
 
-     cutvar = Form("%s&&(%s||%s||%s||%s||%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data(),cutforothers3.Data(),cutforothers4.Data(),cutforothers5.Data(),cutforothers6.Data());
+     //cutvar = Form("%s&&(%s||%s||%s||%s||%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data(),cutforothers3.Data(),cutforothers4.Data(),cutforothers5.Data(),cutforothers6.Data());
+     cutvar = Form("%s&&(%s||%s)",cut.Data(),cutforothers1.Data(),cutforothers2.Data());
 
      if(!isPbPb)
        {
@@ -243,9 +245,11 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
      cutvarhis->SetBinContent(i+1,DoubleRatio[i]);
      cutvarhis->SetBinError(i+1,DoubleRatioErr[i]);
 
-     if(TMath::Abs(DoubleRatio[i]-1.0)>maxdeviation && i<=nleft) maxdeviation = TMath::Abs(DoubleRatio[i]-1.0);
+     //if(TMath::Abs(DoubleRatio[i]-1.0)>maxdeviation && i<=nleft) maxdeviation = TMath::Abs(DoubleRatio[i]-1.0);
    }
-  
+
+  double  DoubleRatio_nocut = DoubleRatio[3];
+  maxdeviation = TMath::Abs(DoubleRatio_nocut-1.0);
   std::cout<<"Maximum deviation from unity = "<<maxdeviation*100<<"%"<<std::endl;
 
   /*
@@ -275,11 +279,29 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   //f->Draw("same");
   //c0->RedrawAxis();
 
-  //TLine* vline = new TLine(cutvarref[varnum],0.0,cutvarref[varnum],1.0);
-  //vline->SetLineWidth(1);
-  //vline->SetLineStyle(2);
-  //vline->SetLineColor(kGreen);
-  //vline->Draw("same");
+  TLine* vline_ref = new TLine(0.0,0.0,0.0,1.0);
+  vline_ref->SetLineWidth(1);
+  vline_ref->SetLineStyle(2);
+  vline_ref->SetLineColor(kGreen);
+  vline_ref->Draw("same");
+
+  TLine* hline_ref = new TLine(-nleft*cutspacing,1.0,0.0,1.0);
+  hline_ref->SetLineWidth(1);
+  hline_ref->SetLineStyle(2);
+  hline_ref->SetLineColor(kGreen);
+  hline_ref->Draw("same");
+
+  TLine* vline_nocut = new TLine((-nleft+3)*cutspacing,0.0,(-nleft+3)*cutspacing,DoubleRatio_nocut);
+  vline_nocut->SetLineWidth(1);
+  vline_nocut->SetLineStyle(2);
+  vline_nocut->SetLineColor(kRed);
+  vline_nocut->Draw("same");
+
+  TLine* hline_nocut = new TLine(-nleft*cutspacing,DoubleRatio_nocut,(-nleft+3)*cutspacing,DoubleRatio_nocut);
+  hline_nocut->SetLineWidth(1);
+  hline_nocut->SetLineStyle(2);
+  hline_nocut->SetLineColor(kRed);
+  hline_nocut->Draw("same");
 
   TLatex* texcms = new TLatex(0.22,0.87,"CMS");
   texcms->SetNDC();
@@ -322,13 +344,15 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
   tex->SetLineWidth(2);
   tex->Draw();
 
-  tex = new TLatex(0.46,0.730,Form("Maximum deviation (tighter variation)=%.2f%s",maxdeviation*100,texper.Data()));
-  //tex = new TLatex(0.46,0.730,Form("Deviation from unity at no cut=%.2f%s",100*(f->GetParameter(0)-1.0),texper.Data()));
+  
+  //tex = new TLatex(0.46,0.730,Form("Maximum deviation (looser variation)=%.2f%s",maxdeviation*100,texper.Data()));
+  tex = new TLatex(0.46,0.730,Form("Deviation at effective no cut=%.2f%s",maxdeviation*100,texper.Data()));
   tex->SetNDC();
   tex->SetTextFont(42);
   tex->SetTextSize(0.030);
   tex->SetLineWidth(2);
   tex->Draw();
+  
 
   c0->SaveAs(Form("plotCutVar/Cent/cutvariation_%s_%s_pt%.0f-%.0f_cent%.0f-%.0f.png",cutvarname.Data(),collsyst.Data(),_ptBins[0],_ptBins[1],centmin,centmax));
   c0->SaveAs(Form("plotCutVar/Cent/cutvariation_%s_%s_pt%.0f-%.0f_cent%.0f-%.0f.pdf",cutvarname.Data(),collsyst.Data(),_ptBins[0],_ptBins[1],centmin,centmax));
@@ -486,10 +510,10 @@ void clean0(TH1D* h)
   h->SetStats(0);
   h->GetXaxis()->SetNdivisions(-50205);
   h->Draw("e");
-  Bkpi->SetRange(5.00,5.60);
+  Bkpi->SetRange(minhisto,maxhisto);
   Bkpi->Draw("same");
-  background->Draw("same");   
-  mass->SetRange(5.16,5.40);
+  background->Draw("same");
+  mass->SetRange(minhisto,maxhisto);
   mass->Draw("same");
   f->Draw("same");
   c->RedrawAxis();

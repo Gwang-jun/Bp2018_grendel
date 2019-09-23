@@ -12,211 +12,118 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	gStyle->SetEndErrorSize(0);
 	gStyle->SetMarkerStyle(20);
 
-
-	TFile* filenominal1 = new TFile("ptshape/BDT/CrossSectionPbPb_nominal_Cent0-30.root");
-	TFile* fileplus1 = new TFile("ptshape/BDT/CrossSectionPbPb_plus_Cent0-30.root");
-	TFile* fileminus1 = new TFile("ptshape/BDT/CrossSectionPbPb_minus_Cent0-30.root");
+	/*
+	TFile* filenominal1 = new TFile("ptshape/BDT/CrossSectionPbPb_nominal_Cent0-90.root");
+	TFile* filenoweight1 = new TFile("ptshape/BDT/CrossSectionPbPb_noweight_Cent0-90.root");
+	TFile* fileplus1 = new TFile("ptshape/BDT/CrossSectionPbPb_plus_Cent0-90.root");
+	TFile* fileminus1 = new TFile("ptshape/BDT/CrossSectionPbPb_minus_Cent0-90.root");
 	TH1D* hnominal1 = (TH1D*)filenominal1->Get("hPtSigma");
+	TH1D* hnoweight1 = (TH1D*)filenoweight1->Get("hPtSigma");
 	TH1D* hplus1 = (TH1D*)fileplus1->Get("hPtSigma");
 	TH1D* hminus1 = (TH1D*)fileminus1->Get("hPtSigma");
 	double nominal1Err;
 	double nominal1 = hnominal1->IntegralAndError(5,60,nominal1Err,"width");
+	double noweight1Err;
+	double noweight1 = hnoweight1->IntegralAndError(5,60,noweight1Err,"width");
 	double plus1Err;
 	double plus1 = hplus1->IntegralAndError(5,60,plus1Err,"width");
 	double minus1Err;
 	double minus1 = hminus1->IntegralAndError(5,60,minus1Err,"width");
+	double ptshapenoweight1 = noweight1/nominal1;
+	double ptshapenoweight1Err = ptshapenoweight1*sqrt((noweight1Err/noweight1)*(noweight1Err/noweight1)+(nominal1Err/nominal1)*(nominal1Err/nominal1));
 	double ptshapeplus1 = plus1/nominal1;
 	double ptshapeplus1Err = ptshapeplus1*sqrt((plus1Err/plus1)*(plus1Err/plus1)+(nominal1Err/nominal1)*(nominal1Err/nominal1));
 	double ptshapeminus1 = minus1/nominal1;
 	double ptshapeminus1Err = ptshapeminus1*sqrt((minus1Err/minus1)*(minus1Err/minus1)+(nominal1Err/nominal1)*(nominal1Err/nominal1));
 
 	double ptshape1, ptshape1Err;
-
-	if(TMath::Abs(ptshapeplus1)>=TMath::Abs(ptshapeminus1))
-	  {
-	    ptshape1 = ptshapeplus1;
-	    ptshape1Err = ptshapeplus1Err;
-	  }
-	if(TMath::Abs(ptshapeplus1)<TMath::Abs(ptshapeminus1))
-	  {
-	    ptshape1 = ptshapeminus1;
-	    ptshape1Err = ptshapeminus1Err;
-	  }
-	
+	ptshape1 = ptshapenoweight1;
+	ptshape1Err = ptshapenoweight1Err;
 	std::cout<<"ptshape uncertainty: "<<(ptshape1-1.0)*100<<"%"<<std::endl;
-
+	
 	
 	TFile* filenominal2 = new TFile("ptshape/BDT/CrossSectionPbPb_nominal_Cent30-90.root");
+	TFile* filenoweight2 = new TFile("ptshape/BDT/CrossSectionPbPb_noweight_Cent30-90.root");
 	TFile* fileplus2 = new TFile("ptshape/BDT/CrossSectionPbPb_plus_Cent30-90.root");
 	TFile* fileminus2 = new TFile("ptshape/BDT/CrossSectionPbPb_minus_Cent30-90.root");
 	TH1D* hnominal2 = (TH1D*)filenominal2->Get("hPtSigma");
+	TH1D* hnoweight2 = (TH1D*)filenoweight2->Get("hPtSigma");
 	TH1D* hplus2 = (TH1D*)fileplus2->Get("hPtSigma");
 	TH1D* hminus2 = (TH1D*)fileminus2->Get("hPtSigma");
 	double nominal2Err;
 	double nominal2 = hnominal2->IntegralAndError(5,60,nominal2Err,"width");
+	double noweight2Err;
+	double noweight2 = hnoweight2->IntegralAndError(5,60,noweight2Err,"width");
 	double plus2Err;
 	double plus2 = hplus2->IntegralAndError(5,60,plus2Err,"width");
 	double minus2Err;
 	double minus2 = hminus2->IntegralAndError(5,60,minus2Err,"width");
+	double ptshapenoweight2 = noweight2/nominal2;
+	double ptshapenoweight2Err = ptshapenoweight2*sqrt((noweight2Err/noweight2)*(noweight2Err/noweight2)+(nominal2Err/nominal2)*(nominal2Err/nominal2));
 	double ptshapeplus2 = plus2/nominal2;
 	double ptshapeplus2Err = ptshapeplus2*sqrt((plus2Err/plus2)*(plus2Err/plus2)+(nominal2Err/nominal2)*(nominal2Err/nominal2));
 	double ptshapeminus2 = minus2/nominal2;
 	double ptshapeminus2Err = ptshapeminus2*sqrt((minus2Err/minus2)*(minus2Err/minus2)+(nominal2Err/nominal2)*(nominal2Err/nominal2));
 
 	double ptshape2, ptshape2Err;
-
-	if(TMath::Abs(ptshapeplus2)>=TMath::Abs(ptshapeminus2))
-	  {
-	    ptshape2 = ptshapeplus2;
-	    ptshape2Err = ptshapeplus2Err;
-	  }
-	if(TMath::Abs(ptshapeplus2)<TMath::Abs(ptshapeminus2))
-	  {
-	    ptshape2 = ptshapeminus2;
-	    ptshape2Err = ptshapeminus2Err;
-	  }
-	
+	ptshape2 = ptshapenoweight2;
+	ptshape2Err = ptshapenoweight2Err;
 	std::cout<<"ptshape uncertainty: "<<(ptshape2-1.0)*100<<"%"<<std::endl;
 	
 
-	TH1D* ptshapeplusCent = new TH1D("","",nBinsCent,ptBinsCent);
-	ptshapeplusCent->GetXaxis()->CenterTitle();
-	ptshapeplusCent->GetYaxis()->CenterTitle();
-	ptshapeplusCent->GetXaxis()->SetTitle("hiBin");
-	ptshapeplusCent->GetYaxis()->SetTitle("Corrected yield Ratio");
-	ptshapeplusCent->GetXaxis()->SetTitleOffset(0.9);
-	ptshapeplusCent->GetYaxis()->SetTitleOffset(0.95);
-	ptshapeplusCent->GetXaxis()->SetTitleSize(0.05);
-	ptshapeplusCent->GetYaxis()->SetTitleSize(0.05);
-	ptshapeplusCent->GetXaxis()->SetTitleFont(42);
-	ptshapeplusCent->GetYaxis()->SetTitleFont(42);
-	ptshapeplusCent->GetXaxis()->SetLabelFont(42);
-	ptshapeplusCent->GetYaxis()->SetLabelFont(42);
-	ptshapeplusCent->GetXaxis()->SetLabelSize(0.035);
-	ptshapeplusCent->GetYaxis()->SetLabelSize(0.035);
-	ptshapeplusCent->SetLineColor(kBlue);
+	TH1D* ptshapenoweightCent = new TH1D("","",nBinsCent,ptBinsCent);
+	ptshapenoweightCent->GetXaxis()->CenterTitle();
+	ptshapenoweightCent->GetYaxis()->CenterTitle();
+	ptshapenoweightCent->GetXaxis()->SetTitle("hiBin");
+	ptshapenoweightCent->GetYaxis()->SetTitle("Corrected yield Ratio");
+	ptshapenoweightCent->GetXaxis()->SetTitleOffset(0.9);
+	ptshapenoweightCent->GetYaxis()->SetTitleOffset(0.95);
+	ptshapenoweightCent->GetXaxis()->SetTitleSize(0.05);
+	ptshapenoweightCent->GetYaxis()->SetTitleSize(0.05);
+	ptshapenoweightCent->GetXaxis()->SetTitleFont(42);
+	ptshapenoweightCent->GetYaxis()->SetTitleFont(42);
+	ptshapenoweightCent->GetXaxis()->SetLabelFont(42);
+	ptshapenoweightCent->GetYaxis()->SetLabelFont(42);
+	ptshapenoweightCent->GetXaxis()->SetLabelSize(0.035);
+	ptshapenoweightCent->GetYaxis()->SetLabelSize(0.035);
+	ptshapenoweightCent->SetLineColor(kBlue);
 
-	ptshapeplusCent->SetBinContent(1,ptshapeplus1);
-	ptshapeplusCent->SetBinError(1,ptshapeplus1Err);
-	ptshapeplusCent->SetBinContent(2,ptshapeplus2);
-	ptshapeplusCent->SetBinError(2,ptshapeplus2Err);
-
-	TH1D* ptshapeminusCent = new TH1D("","",nBinsCent,ptBinsCent);
-	ptshapeminusCent->GetXaxis()->CenterTitle();
-	ptshapeminusCent->GetYaxis()->CenterTitle();
-	ptshapeminusCent->GetXaxis()->SetTitle("hiBin");
-	ptshapeminusCent->GetYaxis()->SetTitle("Corrected yield Ratio");
-	ptshapeminusCent->GetXaxis()->SetTitleOffset(0.9);
-	ptshapeminusCent->GetYaxis()->SetTitleOffset(0.95);
-	ptshapeminusCent->GetXaxis()->SetTitleSize(0.05);
-	ptshapeminusCent->GetYaxis()->SetTitleSize(0.05);
-	ptshapeminusCent->GetXaxis()->SetTitleFont(42);
-	ptshapeminusCent->GetYaxis()->SetTitleFont(42);
-	ptshapeminusCent->GetXaxis()->SetLabelFont(42);
-	ptshapeminusCent->GetYaxis()->SetLabelFont(42);
-	ptshapeminusCent->GetXaxis()->SetLabelSize(0.035);
-	ptshapeminusCent->GetYaxis()->SetLabelSize(0.035);
-	ptshapeminusCent->SetLineColor(kRed);
-
-	ptshapeminusCent->SetBinContent(1,ptshapeminus1);
-	ptshapeminusCent->SetBinError(1,ptshapeminus1Err);
-	ptshapeminusCent->SetBinContent(2,ptshapeminus2);
-	ptshapeminusCent->SetBinError(2,ptshapeminus2Err);
+	ptshapenoweightCent->SetBinContent(1,ptshapenoweight1);
+	ptshapenoweightCent->SetBinError(1,ptshapenoweight1Err);
+	//ptshapenoweightCent->SetBinContent(2,ptshapenoweight2);
+	//ptshapenoweightCent->SetBinError(2,ptshapenoweight2Err);
 
 	TCanvas* cptshape = new TCanvas("","",600,600);
 	cptshape->cd();
-	ptshapeplusCent->SetMaximum(1.5);
-	ptshapeplusCent->SetMinimum(0.5);
-	ptshapeplusCent->Draw("ep");
-	ptshapeminusCent->Draw("ep same");
+	ptshapenoweightCent->SetMaximum(1.5);
+	ptshapenoweightCent->SetMinimum(0.5);
+	ptshapenoweightCent->Draw("ep");
 
 	TLegend *leg100 = new TLegend(0.45,0.70,0.75,0.80,NULL,"brNDC");
 	leg100->SetBorderSize(0);
 	leg100->SetTextSize(0.04);
 	leg100->SetTextFont(42);
 	leg100->SetFillStyle(0);
-	leg100->AddEntry(ptshapeplusCent,"Data/MC +1 #sigma","l");
-	leg100->AddEntry(ptshapeminusCent,"Data/MC -1 #sigma","l");
+	leg100->AddEntry(ptshapenoweightCent,"Data/MC noweight","l");
 	leg100->Draw("same");
 
-	cptshape->SaveAs("ptshape/ptshape_Cent1_BDT.png");
-	cptshape->SaveAs("ptshape/ptshape_Cent1_BDT.pdf");
-
-
-	/*
-	TFile* fileFONLL1 = new TFile("ptshape/BDT/CrossSectionPbPb_FONLL_Cent0-90.root");
-	TFile* fileExtrapolatedpp1 = new TFile("ptshape/BDT/CrossSectionPbPb_Extrapolatedpp_Cent0-90.root");
-	TH1D* hFONLL1 = (TH1D*)fileFONLL1->Get("hPtSigma");
-	TH1D* hExtrapolatedpp1 = (TH1D*)fileExtrapolatedpp1->Get("hPtSigma");
-	double Ext1Err;
-	double Ext1 = hExtrapolatedpp1->IntegralAndError(5,60,Ext1Err,"width");
-	double FON1Err;
-	double FON1 = hFONLL1->IntegralAndError(5,60,FON1Err,"width");
-	double ptshape1 = Ext1/FON1;
-	double ptshape1Err = ptshape1*sqrt((Ext1Err/Ext1)*(Ext1Err/Ext1)+(FON1Err/FON1)*(FON1Err/FON1));
-
-	std::cout<<"ptshape uncertainty: "<<ptshape1<<" Error: "<<ptshape1Err<<std::endl;
-
-
-	TFile* fileFONLL2 = new TFile("ptshape/BDT/CrossSectionPbPb_FONLL_Cent30-90.root");
-	TFile* fileExtrapolatedpp2 = new TFile("ptshape/BDT/CrossSectionPbPb_Extrapolatedpp_Cent30-90.root");
-	TH1D* hFONLL2 = (TH1D*)fileFONLL2->Get("hPtSigma");
-	TH1D* hExtrapolatedpp2 = (TH1D*)fileExtrapolatedpp2->Get("hPtSigma");
-	double Ext2Err;
-	double Ext2 = hExtrapolatedpp2->IntegralAndError(5,60,Ext2Err,"width");
-	double FON2Err;
-	double FON2 = hFONLL2->IntegralAndError(5,60,FON2Err,"width");
-	double ptshape2 = Ext2/FON2;
-	double ptshape2Err = ptshape2*sqrt((Ext2Err/Ext2)*(Ext2Err/Ext2)+(FON2Err/FON2)*(FON2Err/FON2));
-
-	std::cout<<"ptshape uncertainty: "<<ptshape2<<" Error: "<<ptshape2Err<<std::endl;
-	
-
-	TH1D* ptshapeCent = new TH1D("","",nBinsCent,ptBinsCent);
-	ptshapeCent->GetXaxis()->CenterTitle();
-	ptshapeCent->GetYaxis()->CenterTitle();
-	ptshapeCent->GetXaxis()->SetTitle("hiBin");
-	ptshapeCent->GetYaxis()->SetTitle("Corrected yield Extrapolated pp/FONLL");
-	ptshapeCent->GetXaxis()->SetTitleOffset(0.9);
-	ptshapeCent->GetYaxis()->SetTitleOffset(0.95);
-	ptshapeCent->GetXaxis()->SetTitleSize(0.05);
-	ptshapeCent->GetYaxis()->SetTitleSize(0.05);
-	ptshapeCent->GetXaxis()->SetTitleFont(42);
-	ptshapeCent->GetYaxis()->SetTitleFont(42);
-	ptshapeCent->GetXaxis()->SetLabelFont(42);
-	ptshapeCent->GetYaxis()->SetLabelFont(42);
-	ptshapeCent->GetXaxis()->SetLabelSize(0.035);
-	ptshapeCent->GetYaxis()->SetLabelSize(0.035);
-	ptshapeCent->SetLineColor(kBlue);
-
-	ptshapeCent->SetBinContent(1,ptshape1);
-	ptshapeCent->SetBinError(1,ptshape1Err);
-	//ptshapeCent->SetBinContent(2,ptshape2);
-	//ptshapeCent->SetBinError(2,ptshape2Err);
-
-	TCanvas* cptshape = new TCanvas("","",600,600);
-	cptshape->cd();
-	ptshapeCent->SetMaximum(1.3);
-	ptshapeCent->SetMinimum(0.7);
-	ptshapeCent->Draw("ep");
-	cptshape->SaveAs("ptshape/ptshape_Cent2_BDT.png");
-	cptshape->SaveAs("ptshape/ptshape_Cent2_BDT.pdf");
+	cptshape->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.png");
+	cptshape->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.pdf");
 	*/
-
 
 	std::cout<<"step1"<<std::endl;
 
-	TFile* fileReference = new TFile(inputFONLL.Data());  
-	TGraphAsymmErrors* gaeBplusReference = (TGraphAsymmErrors*)fileReference->Get("gaeSigmaBplus");
+        TFile* fileReference = new TFile(inputFONLL.Data());
+        TGraphAsymmErrors* gaeBplusReference = (TGraphAsymmErrors*)fileReference->Get("gaeSigmaBplus");
 
-	if (!(usePbPb==1||usePbPb==0)) std::cout<<"ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, you are using a non valid isPbPb option"<<std::endl;
-	bool isPbPb=(bool)(usePbPb);
+        if (!(usePbPb==1||usePbPb==0)) std::cout<<"ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, you are using a non valid isPbPb option"<<std::endl;
+        bool isPbPb=(bool)(usePbPb);
 
-	float tpadpos = 1-tpadr;
-	if(!isPbPb) tpadr = 1;
+        float tpadpos = 1-tpadr;
+        if(!isPbPb) tpadr = 1;
 
-	//TFile* file = new TFile("ptshape/BDT/yields_Bp_binned_pt.root");
-	TFile* file = new TFile(input.Data());  
+	TFile* file = new TFile("unbinnedfiles/yields_Bp_binned_pt_Bsbin_Cent0-90.root");
+	//TFile* file = new TFile(input.Data());
 	TFile* fileeff = new TFile(efficiency.Data());
 	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
@@ -224,20 +131,28 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	//hPtSigma->Scale(1./(2*lumi*BRchain));
 
 	float taa = 6.274;
-	
+	//float taa = 15.41;
+	//float taa = 1.705;
+
 	hPtSigma->Scale(1./(2*taa*BRchain));
 	hPtSigma->SetName("hPtSigma");
-
-	if(!isPbPb)
-	  {
-	    hPtSigma->SetBinContent(1,5.815612e+06);
-	    hPtSigma->SetBinError(1,8.067642e+05);
-	  }
+	
+	/*
+	TH1D* hPtSigma = new TH1D("hPtSigma","",nBins,ptBins);
+	hPtSigma->SetBinContent(1,14619722.568099);
+	hPtSigma->SetBinError(1,1679423.672859);
+	hPtSigma->SetBinContent(2,2837699.722421);
+	hPtSigma->SetBinError(2,176846.763128);
+	hPtSigma->SetBinContent(3,704946.913442);
+	hPtSigma->SetBinError(3,48853.139006);
+	hPtSigma->SetBinContent(4,86755.486203);
+	hPtSigma->SetBinError(4,5064.702126);
+	*/
 
 	for(int k=0;k<nBins;k++){
-	  printf("p_t bin %.0f-%.0f     CrossSection: %f\n", ptBins[k], ptBins[k+1], hPtSigma->GetBinContent(k+1));}
+	  printf("p_t bin %.0f-%.0f Corrected Yield: %f Err: %f\n", ptBins[k], ptBins[k+1], hPtSigma->GetBinContent(k+1), hPtSigma->GetBinError(k+1));}
 
-
+	
 	Double_t xr[nBins], xrlow[nBins], xrhigh[nBins], ycross[nBins],ycrossstat[nBins],ycrosssysthigh[nBins],ycrosssystlow[nBins], yFONLL[nBins];
 	Double_t yratiocrossFONLL[nBins], yratiocrossFONLLstat[nBins], yratiocrossFONLLsysthigh[nBins], yratiocrossFONLLsystlow[nBins];
 	Double_t yFONLLrelunclow[nBins], yFONLLrelunchigh[nBins], yunity[nBins];
@@ -259,7 +174,8 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 		    systematic=0.01*systematicsPP(xr[i],0.);
 		  }
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
-		else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);     
+		//else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
+		else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
 
 		ycrosssysthigh[i]= hPtSigma->GetBinContent(i+1)*systematic;
 		ycrosssystlow[i]= hPtSigma->GetBinContent(i+1)*systematic;
@@ -574,14 +490,15 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 
 	TFile *outputfile=new TFile(outputplot.Data(),"recreate");
 	outputfile->cd();
-	gaeCrossSyst->Write();
-	gaeRatioCrossFONLLstat->Write();
-	gaeBplusReference->Write();
+	//gaeCrossSyst->Write();
+	//gaeRatioCrossFONLLstat->Write();
+	//gaeBplusReference->Write();
 	hPtSigma->Write();
-	gaeRatioCrossFONLLstat->Write();
-	gaeRatioCrossFONLLsyst->Write();
-	gaeRatioCrossFONLLunity->Write();
-	hEff->Write();
+	//gaeRatioCrossFONLLstat->Write();
+	//gaeRatioCrossFONLLsyst->Write();
+	//gaeRatioCrossFONLLunity->Write();
+	//hEff->Write();
+
 }
 
 

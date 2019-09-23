@@ -3,7 +3,7 @@
 
 const int iteration = 0;
 bool dofit = 1;
-bool examinevar = 1;
+bool examinevar = 0;
 
 TString inputyieldname_data = "ptshape/BDT/yields_Bp_binned_pt.root";
 TString inputyieldname_MC = Form("ptshape/BDT/yields_Bp_mc_binned_pt_iter%d.root",iteration);

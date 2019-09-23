@@ -81,12 +81,18 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
     weightPVz = "(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
     //weightGpt = "(2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308";
     //weightBgenpt = "(2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308";
-    weightGpt = "(3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897";
-    weightBgenpt = "(3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897";
+    //weightGpt = "(3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897";
+    //weightBgenpt = "(3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897";
     //weightGpt = "(1.883180+-0.290677*Gpt+0.000225*Gpt*Gpt)*TMath::Exp(-0.161669*Gpt)+1.171923";
     //weightBgenpt = "(1.883180+-0.290677*Bgenpt+0.000225*Bgenpt*Bgenpt)*TMath::Exp(-0.161669*Bgenpt)+1.171923";
     weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
     weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+    //weightGpt = "1";
+    //weightBgenpt = "1";
+    //weightGpt = "(3.76547732-0.48262502*Gpt+0.02740408*Gpt*Gpt-0.00060885*Gpt*Gpt*Gpt+0.00000478*Gpt*Gpt*Gpt*Gpt)";
+    //weightBgenpt = "(3.76547732-0.48262502*Bgenpt+0.02740408*Bgenpt*Bgenpt-0.00060885*Bgenpt*Bgenpt*Bgenpt+0.00000478*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+    //weightGpt = "(2.32807290-0.24845949*Gpt+0.01337001*Gpt*Gpt-0.00026320*Gpt*Gpt*Gpt+0.00000170*Gpt*Gpt*Gpt*Gpt)";
+    //weightBgenpt = "(2.32807290-0.24845949*Bgenpt+0.01337001*Bgenpt*Bgenpt-0.00026320*Bgenpt*Bgenpt*Bgenpt+0.00000170*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
   }
 
   TH1D* hPtMC = new TH1D("hPtMC","",_nBins,_ptBins);
@@ -106,11 +112,6 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
   ////// tag & probe scaling factor
   for(int i = 0; i < _nBins; i++){printf("%.2f, ", hPtMC->GetBinContent(i+1));}printf("\n");
   double sf_pp[2] = {1., 1.};
-
-  //double sf_pbpb[2] = {1.0932, 1.1020};// FONLL Cent 0-30-90%
-  //double sf_pbpb[1] = {1.0953};// FONLL Cent 0-90%
-  //double sf_pbpb[2] = {1.0918, 1.1023};// Extrapolated pp Cent 0-30-90%
-  //double sf_pbpb[1] = {1.0943};// Extrapolated pp Cent 0-90%
   //double sf_pbpb[2] = {1.0911, 1.1013};
   double sf_pbpb[1] = {1.0936};
 
@@ -162,116 +163,296 @@ void MCefficiencyCent(int isPbPb=0,TString inputmc="", TString selmcgen="",TStri
   //hEff->Divide(hPtMC,hPtGen,1,1,"");
   hEff->Multiply(hEff,hEffAcc,1,1);
 
-  /*  
-  TFile* fileFONLLCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_FONLL_Cent1.root");
-  TFile* fileExtrapolatedppCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_Extrapolatedpp_Cent1.root");
-  TFile* fileFONLLCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_FONLL_Cent2.root");
-  TFile* fileExtrapolatedppCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_Extrapolatedpp_Cent2.root");  
-  TH1D* hEffFONLLCent1 = (TH1D*)fileFONLLCent1->Get("hEff");
-  hEffFONLLCent1->GetXaxis()->CenterTitle();
-  hEffFONLLCent1->GetYaxis()->CenterTitle();
-  hEffFONLLCent1->GetXaxis()->SetTitle("hiBin");
-  hEffFONLLCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
-  hEffFONLLCent1->GetXaxis()->SetTitleOffset(0.9);
-  hEffFONLLCent1->GetYaxis()->SetTitleOffset(0.95);
-  hEffFONLLCent1->GetXaxis()->SetTitleSize(0.05);
-  hEffFONLLCent1->GetYaxis()->SetTitleSize(0.05);
-  hEffFONLLCent1->GetXaxis()->SetTitleFont(42);
-  hEffFONLLCent1->GetYaxis()->SetTitleFont(42);
-  hEffFONLLCent1->GetXaxis()->SetLabelFont(42);
-  hEffFONLLCent1->GetYaxis()->SetLabelFont(42);
-  hEffFONLLCent1->GetXaxis()->SetLabelSize(0.035);
-  hEffFONLLCent1->GetYaxis()->SetLabelSize(0.035);
-  hEffFONLLCent1->SetLineColor(kRed);
-  TH1D* hEffExtrapolatedppCent1 = (TH1D*)fileExtrapolatedppCent1->Get("hEff");
-  hEffExtrapolatedppCent1->GetXaxis()->CenterTitle();
-  hEffExtrapolatedppCent1->GetYaxis()->CenterTitle();
-  hEffExtrapolatedppCent1->GetXaxis()->SetTitle("hiBin");
-  hEffExtrapolatedppCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
-  hEffExtrapolatedppCent1->GetXaxis()->SetTitleOffset(0.9);
-  hEffExtrapolatedppCent1->GetYaxis()->SetTitleOffset(0.95);
-  hEffExtrapolatedppCent1->GetXaxis()->SetTitleSize(0.05);
-  hEffExtrapolatedppCent1->GetYaxis()->SetTitleSize(0.05);
-  hEffExtrapolatedppCent1->GetXaxis()->SetTitleFont(42);
-  hEffExtrapolatedppCent1->GetYaxis()->SetTitleFont(42);
-  hEffExtrapolatedppCent1->GetXaxis()->SetLabelFont(42);
-  hEffExtrapolatedppCent1->GetYaxis()->SetLabelFont(42);
-  hEffExtrapolatedppCent1->GetXaxis()->SetLabelSize(0.035);
-  hEffExtrapolatedppCent1->GetYaxis()->SetLabelSize(0.035);
-  hEffExtrapolatedppCent1->SetLineColor(kBlue);
-  TH1D* hEffFONLLCent2 = (TH1D*)fileFONLLCent2->Get("hEff");
-  hEffFONLLCent2->GetXaxis()->CenterTitle();
-  hEffFONLLCent2->GetYaxis()->CenterTitle();
-  hEffFONLLCent2->GetXaxis()->SetTitle("hiBin");
-  hEffFONLLCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
-  hEffFONLLCent2->GetXaxis()->SetTitleOffset(0.9);
-  hEffFONLLCent2->GetYaxis()->SetTitleOffset(0.95);
-  hEffFONLLCent2->GetXaxis()->SetTitleSize(0.05);
-  hEffFONLLCent2->GetYaxis()->SetTitleSize(0.05);
-  hEffFONLLCent2->GetXaxis()->SetTitleFont(42);
-  hEffFONLLCent2->GetYaxis()->SetTitleFont(42);
-  hEffFONLLCent2->GetXaxis()->SetLabelFont(42);
-  hEffFONLLCent2->GetYaxis()->SetLabelFont(42);
-  hEffFONLLCent2->GetXaxis()->SetLabelSize(0.035);
-  hEffFONLLCent2->GetYaxis()->SetLabelSize(0.035);
-  hEffFONLLCent2->SetLineColor(kRed);
-  TH1D* hEffExtrapolatedppCent2 = (TH1D*)fileExtrapolatedppCent2->Get("hEff");
-  hEffExtrapolatedppCent2->GetXaxis()->CenterTitle();
-  hEffExtrapolatedppCent2->GetYaxis()->CenterTitle();
-  hEffExtrapolatedppCent2->GetXaxis()->SetTitle("hiBin");
-  hEffExtrapolatedppCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
-  hEffExtrapolatedppCent2->GetXaxis()->SetTitleOffset(0.9);
-  hEffExtrapolatedppCent2->GetYaxis()->SetTitleOffset(0.95);
-  hEffExtrapolatedppCent2->GetXaxis()->SetTitleSize(0.05);
-  hEffExtrapolatedppCent2->GetYaxis()->SetTitleSize(0.05);
-  hEffExtrapolatedppCent2->GetXaxis()->SetTitleFont(42);
-  hEffExtrapolatedppCent2->GetYaxis()->SetTitleFont(42);
-  hEffExtrapolatedppCent2->GetXaxis()->SetLabelFont(42);
-  hEffExtrapolatedppCent2->GetYaxis()->SetLabelFont(42);
-  hEffExtrapolatedppCent2->GetXaxis()->SetLabelSize(0.035);
-  hEffExtrapolatedppCent2->GetYaxis()->SetLabelSize(0.035);
-  hEffExtrapolatedppCent2->SetLineColor(kBlue);
+  /*
+  TFile* filenominalCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_nominal_Cent0-30-90.root");
+  TFile* fileplusCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_plus_Cent0-30-90.root");
+  TFile* fileminusCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_minus_Cent0-30-90.root");
+  TFile* filenominalCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_nominal_Cent0-90.root");
+  TFile* fileplusCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_plus_Cent0-90.root");
+  TFile* fileminusCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_minus_Cent0-90.root");
+
+  TH1D* hEffnominalCent1 = (TH1D*)filenominalCent1->Get("hEff");
+  hEffnominalCent1->GetXaxis()->CenterTitle();
+  hEffnominalCent1->GetYaxis()->CenterTitle();
+  hEffnominalCent1->GetXaxis()->SetTitle("hiBin");
+  hEffnominalCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnominalCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffnominalCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffnominalCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffnominalCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffnominalCent1->GetXaxis()->SetTitleFont(42);
+  hEffnominalCent1->GetYaxis()->SetTitleFont(42);
+  hEffnominalCent1->GetXaxis()->SetLabelFont(42);
+  hEffnominalCent1->GetYaxis()->SetLabelFont(42);
+  hEffnominalCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffnominalCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffnominalCent1->SetLineColor(kRed);
+  TH1D* hEffplusCent1 = (TH1D*)fileplusCent1->Get("hEff");
+  hEffplusCent1->GetXaxis()->CenterTitle();
+  hEffplusCent1->GetYaxis()->CenterTitle();
+  hEffplusCent1->GetXaxis()->SetTitle("hiBin");
+  hEffplusCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffplusCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffplusCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffplusCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffplusCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffplusCent1->GetXaxis()->SetTitleFont(42);
+  hEffplusCent1->GetYaxis()->SetTitleFont(42);
+  hEffplusCent1->GetXaxis()->SetLabelFont(42);
+  hEffplusCent1->GetYaxis()->SetLabelFont(42);
+  hEffplusCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffplusCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffplusCent1->SetLineColor(kBlue);
+  TH1D* hEffminusCent1 = (TH1D*)fileminusCent1->Get("hEff");
+  hEffminusCent1->GetXaxis()->CenterTitle();
+  hEffminusCent1->GetYaxis()->CenterTitle();
+  hEffminusCent1->GetXaxis()->SetTitle("hiBin");
+  hEffminusCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffminusCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffminusCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffminusCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffminusCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffminusCent1->GetXaxis()->SetTitleFont(42);
+  hEffminusCent1->GetYaxis()->SetTitleFont(42);
+  hEffminusCent1->GetXaxis()->SetLabelFont(42);
+  hEffminusCent1->GetYaxis()->SetLabelFont(42);
+  hEffminusCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffminusCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffminusCent1->SetLineColor(kBlue);
+  TH1D* hEffnominalCent2 = (TH1D*)filenominalCent2->Get("hEff");
+  hEffnominalCent2->GetXaxis()->CenterTitle();
+  hEffnominalCent2->GetYaxis()->CenterTitle();
+  hEffnominalCent2->GetXaxis()->SetTitle("hiBin");
+  hEffnominalCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnominalCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffnominalCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffnominalCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffnominalCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffnominalCent2->GetXaxis()->SetTitleFont(42);
+  hEffnominalCent2->GetYaxis()->SetTitleFont(42);
+  hEffnominalCent2->GetXaxis()->SetLabelFont(42);
+  hEffnominalCent2->GetYaxis()->SetLabelFont(42);
+  hEffnominalCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffnominalCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffnominalCent2->SetLineColor(kRed);
+  TH1D* hEffplusCent2 = (TH1D*)fileplusCent2->Get("hEff");
+  hEffplusCent2->GetXaxis()->CenterTitle();
+  hEffplusCent2->GetYaxis()->CenterTitle();
+  hEffplusCent2->GetXaxis()->SetTitle("hiBin");
+  hEffplusCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffplusCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffplusCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffplusCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffplusCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffplusCent2->GetXaxis()->SetTitleFont(42);
+  hEffplusCent2->GetYaxis()->SetTitleFont(42);
+  hEffplusCent2->GetXaxis()->SetLabelFont(42);
+  hEffplusCent2->GetYaxis()->SetLabelFont(42);
+  hEffplusCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffplusCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffplusCent2->SetLineColor(kBlue);
+  TH1D* hEffminusCent2 = (TH1D*)fileminusCent2->Get("hEff");
+  hEffminusCent2->GetXaxis()->CenterTitle();
+  hEffminusCent2->GetYaxis()->CenterTitle();
+  hEffminusCent2->GetXaxis()->SetTitle("hiBin");
+  hEffminusCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffminusCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffminusCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffminusCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffminusCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffminusCent2->GetXaxis()->SetTitleFont(42);
+  hEffminusCent2->GetYaxis()->SetTitleFont(42);
+  hEffminusCent2->GetXaxis()->SetLabelFont(42);
+  hEffminusCent2->GetYaxis()->SetLabelFont(42);
+  hEffminusCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffminusCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffminusCent2->SetLineColor(kBlue);
+  */
   
-  TH1D* ptshapeCent1 = (TH1D*)hEffExtrapolatedppCent1->Clone("ptshapeCent1");
-  ptshapeCent1->Sumw2();
-  ptshapeCent1->Divide(hEffFONLLCent1);
+  /*
+  TH1D* ptshapeplusCent1 = (TH1D*)hEffnominalCent1->Clone("ptshapeplusCent1");
+  ptshapeplusCent1->Divide(hEffplusCent1);
+  ptshapeplusCent1->SetLineColor(kBlue);
+
+  TH1D* ptshapeminusCent1 = (TH1D*)hEffnominalCent1->Clone("ptshapeminusCent1");
+  ptshapeminusCent1->Divide(hEffminusCent1);
+  ptshapeminusCent1->SetLineColor(kRed);
 
   TCanvas* c100 = new TCanvas("","",600,600);
   c100->cd();
-  ptshapeCent1->SetMaximum(1.3);
-  ptshapeCent1->SetMinimum(0.7);  
+  ptshapeplusCent1->SetMaximum(1.3);
+  ptshapeplusCent1->SetMinimum(0.7);  
+  ptshapeplusCent1->GetXaxis()->SetTitle("hiBin");
+  ptshapeplusCent1->GetYaxis()->SetTitle("#alpha x #epsilon ratio");
+  ptshapeplusCent1->Draw();
+  ptshapeminusCent1->Draw("same");
+
+  TLegend *leg100 = new TLegend(0.45,0.70,0.75,0.80,NULL,"brNDC");                                                                               leg100->SetBorderSize(0);
+  leg100->SetTextSize(0.04);
+  leg100->SetTextFont(42);
+  leg100->SetFillStyle(0);
+  leg100->AddEntry(ptshapeplusCent1,"Data/MC +1 #sigma","l");
+  leg100->AddEntry(ptshapeminusCent1,"Data/MC -1 #sigma","l");
+  leg100->Draw("same");                                                                                                                        
+
+  c100->SaveAs("ptshape/ptshape_Cent1_BDT_datadriven.png");
+  c100->SaveAs("ptshape/ptshape_Cent1_BDT_datadriven.pdf");
+
+  for(int j=0;j<2;j++)
+    {
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(plus): %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeplusCent1->GetBinContent(j+1)-1.0));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(minus): %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeminusCent1->GetBinContent(j+1)-1.0));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(maximum): %f (percent)\n",_ptBins[j],_ptBins[j+1],TMath::Max(TMath::Abs(100.0*(ptshapeplusCent1->GetBinContent(j+1)-1.0)),TMath::Abs(100.0*(ptshapeminusCent1->GetBinContent(j+1)-1.0))));
+    }
+  */
+  
+  /*
+  TH1D* ptshapeplusCent2 = (TH1D*)hEffnominalCent2->Clone("ptshapeplusCent2");
+  ptshapeplusCent2->Divide(hEffplusCent2);
+  ptshapeplusCent2->SetLineColor(kBlue);
+
+  TH1D* ptshapeminusCent2 = (TH1D*)hEffnominalCent2->Clone("ptshapeminusCent2");
+  ptshapeminusCent2->Divide(hEffminusCent2);
+  ptshapeminusCent2->SetLineColor(kRed);
+
+  TCanvas* c200 = new TCanvas("","",600,600);
+  c200->cd();
+  ptshapeplusCent2->SetMaximum(1.3);
+  ptshapeplusCent2->SetMinimum(0.7);  
+  ptshapeplusCent2->GetXaxis()->SetTitle("hiBin");
+  ptshapeplusCent2->GetYaxis()->SetTitle("#alpha x #epsilon ratio");
+  ptshapeplusCent2->Draw();
+  ptshapeminusCent2->Draw("same");
+
+  TLegend *leg200 = new TLegend(0.45,0.70,0.75,0.80,NULL,"brNDC");                                                                               leg200->SetBorderSize(0);
+  leg200->SetTextSize(0.04);
+  leg200->SetTextFont(42);
+  leg200->SetFillStyle(0);
+  leg200->AddEntry(ptshapeplusCent2,"Data/MC +1 #sigma","l");
+  leg200->AddEntry(ptshapeminusCent2,"Data/MC -1 #sigma","l");
+  leg200->Draw("same");                                                                                                                        
+
+  c200->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.png");
+  c200->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.pdf");
+
+  for(int j=0;j<1;j++)
+    {
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(plus): %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeplusCent2->GetBinContent(j+1)-1.0));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(minus): %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeminusCent2->GetBinContent(j+1)-1.0));
+      printf("Cent bins %.0f-%.0f ptshape uncertainty(maximum): %f (percent)\n",_ptBins[j],_ptBins[j+1],TMath::Max(TMath::Abs(100.0*(ptshapeplusCent2->GetBinContent(j+1)-1.0)),TMath::Abs(100.0*(ptshapeminusCent2->GetBinContent(j+1)-1.0))));
+    }
+  */
+
+
+  TFile* filenominalCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_nominal_Cent0-30-90.root");
+  TFile* filenoweightCent1 = new TFile("ptshape/BDT/MCstudiesPbPb_noweight_Cent0-30-90.root");
+  TFile* filenominalCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_nominal_Cent0-90.root");
+  TFile* filenoweightCent2 = new TFile("ptshape/BDT/MCstudiesPbPb_noweight_Cent0-90.root");
+
+  TH1D* hEffnominalCent1 = (TH1D*)filenominalCent1->Get("hEff");
+  hEffnominalCent1->GetXaxis()->CenterTitle();
+  hEffnominalCent1->GetYaxis()->CenterTitle();
+  hEffnominalCent1->GetXaxis()->SetTitle("hiBin");
+  hEffnominalCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnominalCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffnominalCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffnominalCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffnominalCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffnominalCent1->GetXaxis()->SetTitleFont(42);
+  hEffnominalCent1->GetYaxis()->SetTitleFont(42);
+  hEffnominalCent1->GetXaxis()->SetLabelFont(42);
+  hEffnominalCent1->GetYaxis()->SetLabelFont(42);
+  hEffnominalCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffnominalCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffnominalCent1->SetLineColor(kRed);
+  TH1D* hEffnoweightCent1 = (TH1D*)filenoweightCent1->Get("hEff");
+  hEffnoweightCent1->GetXaxis()->CenterTitle();
+  hEffnoweightCent1->GetYaxis()->CenterTitle();
+  hEffnoweightCent1->GetXaxis()->SetTitle("hiBin");
+  hEffnoweightCent1->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnoweightCent1->GetXaxis()->SetTitleOffset(0.9);
+  hEffnoweightCent1->GetYaxis()->SetTitleOffset(0.95);
+  hEffnoweightCent1->GetXaxis()->SetTitleSize(0.05);
+  hEffnoweightCent1->GetYaxis()->SetTitleSize(0.05);
+  hEffnoweightCent1->GetXaxis()->SetTitleFont(42);
+  hEffnoweightCent1->GetYaxis()->SetTitleFont(42);
+  hEffnoweightCent1->GetXaxis()->SetLabelFont(42);
+  hEffnoweightCent1->GetYaxis()->SetLabelFont(42);
+  hEffnoweightCent1->GetXaxis()->SetLabelSize(0.035);
+  hEffnoweightCent1->GetYaxis()->SetLabelSize(0.035);
+  hEffnoweightCent1->SetLineColor(kBlue);
+  TH1D* hEffnominalCent2 = (TH1D*)filenominalCent2->Get("hEff");
+  hEffnominalCent2->GetXaxis()->CenterTitle();
+  hEffnominalCent2->GetYaxis()->CenterTitle();
+  hEffnominalCent2->GetXaxis()->SetTitle("hiBin");
+  hEffnominalCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnominalCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffnominalCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffnominalCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffnominalCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffnominalCent2->GetXaxis()->SetTitleFont(42);
+  hEffnominalCent2->GetYaxis()->SetTitleFont(42);
+  hEffnominalCent2->GetXaxis()->SetLabelFont(42);
+  hEffnominalCent2->GetYaxis()->SetLabelFont(42);
+  hEffnominalCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffnominalCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffnominalCent2->SetLineColor(kRed);
+  TH1D* hEffnoweightCent2 = (TH1D*)filenoweightCent2->Get("hEff");
+  hEffnoweightCent2->GetXaxis()->CenterTitle();
+  hEffnoweightCent2->GetYaxis()->CenterTitle();
+  hEffnoweightCent2->GetXaxis()->SetTitle("hiBin");
+  hEffnoweightCent2->GetYaxis()->SetTitle("#alpha x #epsilon");
+  hEffnoweightCent2->GetXaxis()->SetTitleOffset(0.9);
+  hEffnoweightCent2->GetYaxis()->SetTitleOffset(0.95);
+  hEffnoweightCent2->GetXaxis()->SetTitleSize(0.05);
+  hEffnoweightCent2->GetYaxis()->SetTitleSize(0.05);
+  hEffnoweightCent2->GetXaxis()->SetTitleFont(42);
+  hEffnoweightCent2->GetYaxis()->SetTitleFont(42);
+  hEffnoweightCent2->GetXaxis()->SetLabelFont(42);
+  hEffnoweightCent2->GetYaxis()->SetLabelFont(42);
+  hEffnoweightCent2->GetXaxis()->SetLabelSize(0.035);
+  hEffnoweightCent2->GetYaxis()->SetLabelSize(0.035);
+  hEffnoweightCent2->SetLineColor(kBlue);
+  
+  /*  
+  TH1D* ptshapeCent1 = (TH1D*)hEffnoweightCent1->Clone("ptshapeCent1");
+  ptshapeCent1->Divide(hEffnominalCent1);
+
+  TCanvas* c100 = new TCanvas("","",600,600);
+  c100->cd();
+  ptshapeCent1->SetMaximum(1.5);
+  ptshapeCent1->SetMinimum(0.5);  
   ptshapeCent1->GetXaxis()->SetTitle("hiBin");
-  ptshapeCent1->GetYaxis()->SetTitle("#alpha x #epsilon Extrapolated pp/FONLL");
+  ptshapeCent1->GetYaxis()->SetTitle("#alpha x #epsilon nominal/noweight");
   ptshapeCent1->Draw();
-  c100->SaveAs("ptshape_Cent1_BDT.png");
-  c100->SaveAs("ptshape_Cent1_BDT.pdf");
+  c100->SaveAs("ptshape/ptshape_Cent1_BDT_datadriven.png");
+  c100->SaveAs("ptshape/ptshape_Cent1_BDT_datadriven.pdf");
 
   for(int j=0;j<2;j++)
     {
       printf("Cent bins %.0f-%.0f ptshape uncertainty: %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeCent1->GetBinContent(j+1)-1.0));
     }
   */
-
-  /*
-  TH1D* ptshapeCent2 = (TH1D*)hEffExtrapolatedppCent2->Clone("ptshapeCent2");
-  ptshapeCent2->Sumw2();
-  ptshapeCent2->Divide(hEffFONLLCent2);
+  
+  
+  TH1D* ptshapeCent2 = (TH1D*)hEffnoweightCent2->Clone("ptshapeCent2");
+  ptshapeCent2->Divide(hEffnominalCent2);
 
   TCanvas* c200 = new TCanvas("","",600,600);
   c200->cd();
-  ptshapeCent2->SetMaximum(1.3);
-  ptshapeCent2->SetMinimum(0.7);  
+  ptshapeCent2->SetMaximum(1.5);
+  ptshapeCent2->SetMinimum(0.5);  
   ptshapeCent2->GetXaxis()->SetTitle("hiBin");
-  ptshapeCent2->GetYaxis()->SetTitle("#alpha x #epsilon Extrapolated pp/FONLL");
+  ptshapeCent2->GetYaxis()->SetTitle("#alpha x #epsilon nominal/noweight");
   ptshapeCent2->Draw();
-  c200->SaveAs("ptshape_Cent2.png");
-  c200->SaveAs("ptshape_Cent2.pdf");
+  c200->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.png");
+  c200->SaveAs("ptshape/ptshape_Cent2_BDT_datadriven.pdf");
 
   for(int j=0;j<1;j++)
     {
       printf("Cent bins %.0f-%.0f ptshape uncertainty: %f (percent)\n",_ptBins[j],_ptBins[j+1],100.0*(ptshapeCent2->GetBinContent(j+1)-1.0));
-    }
-  */
+    }  
+
 
   TH2F* hemptyEff=new TH2F("hemptyEff","",50,0.,200.,20,0.,0.2);  
   hemptyEff->GetXaxis()->CenterTitle();

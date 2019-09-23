@@ -50,17 +50,17 @@ void fitBY(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trg
 
   if(!isPbPb)
     {
-      seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
-      selmceff = Form("%s&&%s",trgselection.Data(),cut.Data());
-      selmcgen = Form("%s",cutmcgen.Data());
-      selmc = Form("%s&&%s",trgselection.Data(),cut.Data());
+      seldata = Form("%s&&%s&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),ptBinsInc[0],ptBinsInc[1]);
+      selmceff = Form("%s&&%s&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),ptBinsInc[0],ptBinsInc[1]);
+      selmcgen = Form("%s&&Gpt>%f&&Gpt<%f",cutmcgen.Data(),ptBinsInc[0],ptBinsInc[1]);
+      selmc = Form("%s&&%s&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),ptBinsInc[0],ptBinsInc[1]);
     }
   else
     {
-      seldata = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
-      selmceff = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
-      selmcgen = Form("%s&&hiBin>=%f&&hiBin<=%f",cutmcgen.Data(),hiBinMin,hiBinMax);
-      selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
+      seldata = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax,ptBinsInc[0],ptBinsInc[1]);
+      selmceff = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax,ptBinsInc[0],ptBinsInc[1]);
+      selmcgen = Form("%s&&hiBin>=%f&&hiBin<=%f&&Gpt>%f&&Gpt<%f",cutmcgen.Data(),hiBinMin,hiBinMax,ptBinsInc[0],ptBinsInc[1]);
+      selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f&&Bpt>%f&&Bpt<%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax,ptBinsInc[0],ptBinsInc[1]);
     }
 
   gStyle->SetTextSize(0.05);
@@ -88,18 +88,11 @@ void fitBY(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trg
     }
   else
     {
-      //weightgen="pthatweight*(0.715021+0.039896*Gpt-0.000834*Gpt*Gpt+0.000006*Gpt*Gpt*Gpt)"; // private MC
-      //weight="pthatweight*Ncoll*(1.034350*TMath::Exp(-0.000844*(PVz+3.502992)*(PVz+3.502992)))*(0.715021+0.039896*Bgenpt-0.000834*Bgenpt*Bgenpt+0.000006*Bgenpt*Bgenpt*Bgenpt)"; // private MC
-      weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
-      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
-      //weightgen="pthatweight*((2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308)";
-      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308)";
-      //weightgen="pthatweight*(0.889175+0.000791*Gpt+0.000015*Gpt*Gpt)";
-      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(0.889175+0.000791*Bgenpt+0.000015*Bgenpt*Bgenpt)";
-      //weightgen="pthatweight*(0.094376+0.028350*Gpt+-0.000225*Gpt*Gpt+5.369348/Gpt)";
-      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(0.094376+0.028350*Bgenpt+-0.000225*Bgenpt*Bgenpt+5.369348/Bgenpt)";
-    }
-  
+      weightgen="pthatweight*(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+      weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+      //weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
+      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
+    }  
   std::cout<<"we are using weight="<<weight<<std::endl;
   std::cout<<"we are using weightdata="<<weightdata<<std::endl;
   
@@ -112,16 +105,19 @@ void fitBY(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trg
   nt->AddFriend("hltanalysis/HltTree");
   nt->AddFriend("hiEvtAnalyzer/HiTree");
   nt->AddFriend("skimanalysis/HltTree");
+  nt->AddFriend("BDT");
   TTree* ntGen = (TTree*)infMC->Get("Bfinder/ntGen");
   ntGen->AddFriend("hltanalysis/HltTree");
   ntGen->AddFriend("hiEvtAnalyzer/HiTree");
   ntGen->AddFriend("Bfinder/ntKp"); //call PVz
   ntGen->AddFriend("skimanalysis/HltTree");
+  ntGen->AddFriend("BDT");
   TTree* ntMC = (TTree*)infMC->Get("Bfinder/ntKp");
   ntMC->AddFriend("hltanalysis/HltTree");
   ntMC->AddFriend("hiEvtAnalyzer/HiTree");
   ntMC->AddFriend("Bfinder/ntGen"); //call Bgen
   ntMC->AddFriend("skimanalysis/HltTree");
+  ntMC->AddFriend("BDT");
 
   /*
   //For 2015 PbPb, pp data, MC
@@ -162,9 +158,9 @@ void fitBY(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trg
       hPt->SetBinError(i+1,yieldErr/(_ptBins[i+1]-_ptBins[i]));
     }  
 
-  ntMC->Project("hPtMC","abs(By)",TCut(weight)*(TCut(selmceff.Data())&&"(Bgen==23333)"));
+  ntMC->Project("hPtMC","TMath::Abs(By)",TCut(weight)*(TCut(selmceff.Data())&&"(Bgen==23333)"));
   divideBinWidth(hPtMC);
-  ntMC->Project("hPtRecoTruth","abs(By)",TCut(selmceff.Data())&&"(Bgen==23333)");
+  ntMC->Project("hPtRecoTruth","TMath::Abs(By)",TCut(selmceff.Data())&&"(Bgen==23333)");
   divideBinWidth(hPtRecoTruth);
   ntGen->Project("hPtGen","Gy",TCut(weightgen)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
@@ -247,7 +243,6 @@ void getNPFnPar(TString npfname, float par[]){
 //TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool isPbPb,TF1* &total,Float_t centmin, Float_t centmax, float NPpar[])
 TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool isPbPb,TF1* &total,Float_t centmin, Float_t centmax, TString npfit)
 {
-   //cout<<cut.Data()<<endl;
    static Int_t count=0;
    count++;
    TCanvas* c= new TCanvas(Form("c%d",count),"",600,600);
@@ -257,21 +252,12 @@ TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool i
    //TString iNP="7.26667e+00*Gaus(x,5.10472e+00,2.63158e-02)/(sqrt(2*3.14159)*2.63158e-02)+4.99089e+01*Gaus(x,4.96473e+00,9.56645e-02)/(sqrt(2*3.14159)*9.56645e-02)+3.94417e-01*(3.74282e+01*Gaus(x,5.34796e+00,3.11510e-02)+1.14713e+01*Gaus(x,5.42190e+00,1.00544e-01))";
    //TString iNP=Form("TMath::Erf((x-%f)/%f)+1", NPpar[0], NPpar[1]);
    TString iNP = npfit;
-   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*("+iNP+")");
-   
+   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*TMath::Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*("+iNP+")");
 
-   if(isMC==1) nt->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&abs(By)>%f&&abs(By)<%f)*(1/%s)","1",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
-   else nt->Project(Form("h-%d",count),"Bmass",Form("(%s&&abs(By)>%f&&abs(By)<%f)*(1/%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
-
-   ntMC->Project(Form("hMCSignal-%d",count),"Bmass",Form("%s&&abs(By)>%f&&abs(By)<%f",Form("%s&&Bgen==23333",selmc.Data()),ptmin,ptmax));
+   if(isMC==1) nt->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&TMath::Abs(By)>%f&&TMath::Abs(By)<%f)*(1/%s)","1",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
+   else nt->Project(Form("h-%d",count),"Bmass",Form("(%s&&TMath::Abs(By)>%f&&TMath::Abs(By)<%f)*(1/%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
+   ntMC->Project(Form("hMCSignal-%d",count),"Bmass",Form("%s&&Bgen==23333&&TMath::Abs(By)>%f&&TMath::Abs(By)<%f",selmc.Data(),ptmin,ptmax));
    clean0(h);
-/*
-   TFile*fout=new TFile("testout.root","recreate");
-   fout->cd();
-   h->Write();
-   hMCSignal->Write();
-   fout->Close();
-*/
   
    h->Draw();
    f->SetParLimits(4,-1000,1000);
@@ -319,11 +305,7 @@ TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool i
    h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
    h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
    h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-   if(weightdata != "1"){
-//      h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-//      h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-//      h->Fit(Form("f%d",count),"m","",minhisto,maxhisto);
-   }
+
    h->SetMarkerSize(0.8);
    h->SetMarkerStyle(20);
 
@@ -342,7 +324,7 @@ TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool i
    Bkpi->SetFillStyle(3004);
    Bkpi->SetFillColor(kGreen+1);
 
-   TF1 *mass = new TF1(Form("fmass%d",count),"[0]*([3]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[3])*Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
+   TF1 *mass = new TF1(Form("fmass%d",count),"[0]*([3]*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[3])*TMath::Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
    mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
    mass->SetParError(0,f->GetParError(0));
    mass->SetParError(1,f->GetParError(1));
@@ -351,8 +333,12 @@ TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool i
    mass->SetParError(8,f->GetParError(8));
    mass->SetLineColor(2);
 
+   yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
+   yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+   printf("Y bin %.1f-%.1f     yield: %f     yieldErr: %f\n", ptmin, ptmax, yield, yieldErr);
+
   h->SetXTitle("m_{#mu#muK} (GeV/c^{2})");
-  h->SetYTitle("Entries / (5 MeV/c^{2})");
+  h->SetYTitle("Entries / (20 MeV/c^{2})");
   h->GetXaxis()->CenterTitle();
   h->GetYaxis()->CenterTitle();
   h->SetAxisRange(0,h->GetMaximum()*1.4*1.2,"Y");
@@ -430,7 +416,7 @@ TF1 *fit(TTree *nt, TTree *ntMC, Double_t ptmin, Double_t ptmax, int isMC,bool i
   
   if(centMax>0){
   TString texper="%";
-  tex = new TLatex(0.22,0.71,Form("Centrality %.0f-%.0f%s",centMin,centMax,texper.Data()));//0.2612903,0.8425793
+  tex = new TLatex(0.22,0.71,Form("Cent. %.0f-%.0f%s",centMin,centMax,texper.Data()));//0.2612903,0.8425793
   tex->SetNDC();
   tex->SetTextColor(1);
   tex->SetTextFont(42);
