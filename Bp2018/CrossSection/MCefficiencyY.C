@@ -17,8 +17,8 @@ TString weightfunctiongen = "1";
 TString weightfunctionreco = "1";
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
-int _nBins = nBinsY;
-double *_ptBins = ptBinsY;
+int _nBins = nBinsYFine;
+double *_ptBins = ptBinsYFine;
 
 void MCefficiencyY(int isPbPb=1,TString inputmc="", TString selmcgen="",TString selmcgenacceptance="", TString cut_recoonly="", TString cut="",TString label="",TString outputfile="", int useweight=1, Float_t centmin=0., Float_t centmax=90.)
 { 
@@ -138,25 +138,17 @@ void MCefficiencyY(int isPbPb=1,TString inputmc="", TString selmcgen="",TString 
   ntMC->Project("hPthat","pthat","1");
   ntMC->Project("hPthatweight","pthat","pthatweight");
 
-  hPtMC->Sumw2();
-  hPtGenAcc->Sumw2();
-  hPtMCrecoonly->Sumw2();
   //Acceptance
   TH1D* hEffAcc = (TH1D*)hPtGenAcc->Clone("hEffAcc");
-  hEffAcc->Sumw2();
   hEffAcc->Divide(hEffAcc,hPtGen,1,1,"b");
   //Selection
   TH1D* hEffSelection = (TH1D*)hPtMC->Clone("hEffSelection");
-  hEffSelection->Sumw2();
   hEffSelection->Divide(hEffSelection,hPtGenAccWeighted,1,1,"b");
   //Acc * Eff (one shot)
   TH1D* hEffReco = (TH1D*)hPtMCrecoonly->Clone("hEffReco");
-  hEffReco->Sumw2();
   hEffReco->Divide(hEffReco,hPtGen,1,1,"b");
   //Acc * Eff
   TH1D* hEff = (TH1D*)hEffSelection->Clone("hEff");
-  hEff->Sumw2();
-  //hEff->Divide(hPtMC,hPtGen,1,1,"");
   hEff->Multiply(hEff,hEffAcc,1,1);
 
   TH2F* hemptyEff=new TH2F("hemptyEff","",50,_ptBins[0]-1.,_ptBins[_nBins]+1.,10.,0.,1.);  

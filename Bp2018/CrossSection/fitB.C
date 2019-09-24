@@ -2,6 +2,7 @@
 #include "parameters.h"
 #include "TF1.h"
 #include <TFitResultPtr.h>
+#include "ntuple.h"
 
 Double_t setparam0=100.;
 Double_t setparam1=5.28;
@@ -34,12 +35,15 @@ Double_t yieldErr;
 
 void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgselection="1",  TString cut="", TString cutmcgen="", int isMC=0, Double_t luminosity=1., int doweight=0, TString collsyst="PbPb", TString outputfile="", TString npfit="0", int doDataCor = 0, Float_t centmin=0., Float_t centmax=90.)
 {
+  //gStyle->SetPalette(55,0);
+  //gStyle->SetOptStat(0);
+  
   collisionsystem=collsyst;
   if(collisionsystem=="ppInc"||collisionsystem=="PbPbInc"){
     _nBins = nBinsInc;
     _ptBins = ptBinsInc;
   }
-
+  
   hiBinMin = centmin*2;
   hiBinMax = centmax*2;
   centMin = centmin;
@@ -82,12 +86,12 @@ TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax, int isMC,bool, TF1
 //std::cout<<"NP parameter 0: "<<NPpar[0]<<std::endl;
 //std::cout<<"NP parameter 1: "<<NPpar[1]<<std::endl;
  
-//weightdata="2.39475e-02-9.02081e-03*Bpt+9.31757e-04*Bpt*Bpt-1.37827e-05*Bpt*Bpt*Bpt";
 //weightdata="TMath::Exp(3.11695e-08-5.16020e-02*Bpt+2.69860e-03*Bpt*Bpt-3.06583e-05*Bpt*Bpt*Bpt+4.61374e+01/Bpt)";
- weightdata="(3.89345e+00+TMath::Exp(-7.53556e-01*(Bpt-1.55403e+01))+TMath::Exp(-1.54494e-01*(Bpt-2.98192e+01)))";
- //weightdata="1";
- //weightdataBgenpt="(3.89345e+00+TMath::Exp(-7.53556e-01*(Bgenpt-1.55403e+01))+TMath::Exp(-1.54494e-01*(Bgenpt-2.98192e+01)))";
- weightdataBgenpt="1";
+//weightdata="(3.91249e+00+TMath::Exp(-7.63499e-01*(Bpt-1.55399e+01))+TMath::Exp(-1.54551e-01*(Bpt-2.98508e+01)))";//Cent0-90%
+//weightdata="(3.59596e+00+TMath::Exp(-7.33720e-02*(Bpt-3.70229e+01))+TMath::Exp(-9.03380e-01*(Bpt-1.44216e+01))+TMath::Exp(-2.85942e-01*(Bpt-2.22367e+01)))";//Cent0-30%
+//weightdata="(2.66429e+00+TMath::Exp(-9.09252e-01*(Bpt-1.30721e+01))+TMath::Exp(-9.62700e-02*(Bpt-2.85406e+01))+TMath::Exp(-3.34052e-01*(Bpt-1.93575e+01)))";//Cent30-90%
+weightdata="1";
+weightdataBgenpt="1";
  if(!isPbPb)
    {
      weightgen="pthatweight*(0.599212+-0.020703*Gpt+0.003143*Gpt*Gpt+-0.000034*Gpt*Gpt*Gpt)";
@@ -145,11 +149,46 @@ ntMC->AddFriend("ntSkim");
 ntMC->AddFriend("ntGen");
 ntMC->AddFriend("mvaTree");
 */
+ 
+ setbranchaddress(inf,nt);
+ 
+ TFile* Eff2Dfile = new TFile("ROOTfiles/MCstudiesPbPb2D.root");
+ TH2D* hEff2D = (TH2D*)Eff2Dfile->Get("hEff2D");
+ 
+ int nevts=0;
+ double sum=0.0;
+ for(int i=0;i<nt->GetEntries();i++)
+   {
+     nt->GetEntry(i);
+     for(int j=0;j<Bsize;j++)
+       {
+	 if(!(Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBinsInc[0],ptBinsInc[1]))) continue;
+	 nevts++;
+	 sum+=1.0/hEff2D->GetBinContent(hEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0));
+       }
+   }
+ sum=sum/nevts;
+ std::cout<<"1/ae average: "<<sum<<std::endl;
+ 
 
 TH1D* hMean = new TH1D("hMean","",_nBins,_ptBins);                       
 TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",_nBins,_ptBins); 
 TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",_nBins,_ptBins); 
 TF1 * totalmass;
+
+/*
+ TH2D* h2D = new TH2D("h2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+ nt->Project("h2D","By:Bpt",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBins[0],ptBins[nBins]));
+ h2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");                                                                                          
+ h2D->GetYaxis()->SetTitle("B^{+} y");                                                                                                      
+ h2D->GetYaxis()->SetTitleOffset(1.5);                                                                                                      
+ h2D->GetXaxis()->CenterTitle();                                                                                                            
+ h2D->GetYaxis()->CenterTitle();                                                                                                                                                                                                                                                            
+ TCanvas* c2D = new TCanvas("","",600,600);                                                                                                 
+ c2D->cd();                                                                                                                                 
+ h2D->Draw("COLZ");                                                                                                                         
+ c2D->SaveAs("hMass2D.png");                                                                                                                  
+*/
 
 TString outputf;
 outputf = Form("%s",outputfile.Data());
@@ -431,7 +470,7 @@ void getNPFnPar(TString npfname, float par[]){
   f->Draw("same");
   c->RedrawAxis();
 
-  
+  /*  
   TF1 *massdiff0 = new TF1(Form("fmassdiff0%d",count),"([2]*TMath::Gaus(x,[0],[1])/(sqrt(2*3.14159)*[1])+(1-[2])*TMath::Gaus(x,[0],[3])/(sqrt(2*3.14159)*[3]))");
   massdiff0->SetParameters(f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
   massdiff0->SetParError(0,f->GetParError(1));
@@ -471,11 +510,11 @@ void getNPFnPar(TString npfname, float par[]){
   massdiff8->SetParError(1,f->GetParError(1));
   massdiff8->SetParError(2,f->GetParError(7));
   massdiff8->SetParError(3,f->GetParError(8));
-  
+  */
 
   yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
-  //yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
-  yieldErr = (massdiff0->Integral(minhisto,maxhisto)*mass->GetParError(0)+massdiff7->Integral(minhisto,maxhisto)*mass->GetParError(7)+massdiff1->Integral(minhisto,maxhisto)*mass->GetParError(1)+massdiff2->Integral(minhisto,maxhisto)*mass->GetParError(2)+massdiff8->Integral(minhisto,maxhisto)*mass->GetParError(8))/binwidthmass;
+  yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+  //yieldErr = (massdiff0->Integral(minhisto,maxhisto)*mass->GetParError(0)+massdiff7->Integral(minhisto,maxhisto)*mass->GetParError(7)+massdiff1->Integral(minhisto,maxhisto)*mass->GetParError(1)+massdiff2->Integral(minhisto,maxhisto)*mass->GetParError(2)+massdiff8->Integral(minhisto,maxhisto)*mass->GetParError(8))/binwidthmass;
   printf("p_t bin %.0f-%.0f     yield: %f     yieldErr: %f\n", ptmin, ptmax, yield, yieldErr);
   
   Double_t Signal = mass->Integral(5.19932,5.35932)/binwidthmass; //B+ mass_pdg=5.27932GeV, signal region = pm 0.08GeV

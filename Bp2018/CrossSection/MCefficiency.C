@@ -20,6 +20,8 @@ double *_ptBins = ptBinsFine;
 
 void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString selmcgenacceptance="", TString cut_recoonly="", TString cut="",TString label="PP",TString outputfile="test", int useweight=1,Float_t centmin=0., Float_t centmax=100.)
 { 
+  gStyle->SetPalette(55,0);
+
   if(label=="ppInc"){
     _nBins = nBinsInc;
     _ptBins = ptBinsInc;
@@ -110,17 +112,18 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
     //weightBgenpt = "(2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308";    
     //weightGpt = "(3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897";
     //weightBgenpt = "(3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897";
-    weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
-    weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
-    //weightGpt = "1";
-    //weightBgenpt = "1";
+    //weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+    //weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+    weightGpt = "1";
+    weightBgenpt = "1";
     //weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)*(1.19015513+-0.04226922*Bgenpt+0.00289021*Bgenpt*Bgenpt+-0.00007469*Bgenpt*Bgenpt*Bgenpt+0.00000064*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
     //weightGpt = "(3.76547732-0.48262502*Gpt+0.02740408*Gpt*Gpt-0.00060885*Gpt*Gpt*Gpt+0.00000478*Gpt*Gpt*Gpt*Gpt)";
     //weightBgenpt = "(3.76547732-0.48262502*Bgenpt+0.02740408*Bgenpt*Bgenpt-0.00060885*Bgenpt*Bgenpt*Bgenpt+0.00000478*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
     //weightGpt = "(2.32807290-0.24845949*Gpt+0.01337001*Gpt*Gpt-0.00026320*Gpt*Gpt*Gpt+0.00000170*Gpt*Gpt*Gpt*Gpt)";
     //weightBgenpt = "(2.32807290-0.24845949*Bgenpt+0.01337001*Bgenpt*Bgenpt-0.00026320*Bgenpt*Bgenpt*Bgenpt+0.00000170*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
     }
-  
+
+  /*
   TH1D* hPtMC = new TH1D("hPtMC","",_nBins,_ptBins);
   TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",_nBins,_ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
@@ -134,6 +137,7 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   ntGen->Project("hPtGen","Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgen.Data())));
   ntGen->Project("hPtGenAcc","Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
   ntGen->Project("hPtGenAccWeighted","Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
+  */
 
   /*
   ////// tag & probe scaling factor
@@ -163,71 +167,86 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   for(int i = 0; i < _nBins; i++){printf("%.2f, ", hPtMC->GetBinContent(i+1));}printf("\n");
   */
 
+  /*
+  ntMC->Project("hPthat","pthat","1");
+  ntMC->Project("hPthatweight","pthat","pthatweight");
+
   divideBinWidth(hPtMC);
   divideBinWidth(hPtMCrecoonly);
   divideBinWidth(hPtGen);
   divideBinWidth(hPtGenAcc);
   divideBinWidth(hPtGenAccWeighted);
-  
-  ntMC->Project("hPthat","pthat","1");
-  ntMC->Project("hPthatweight","pthat","pthatweight");
-  
-  hPtMC->Sumw2();
-  hPtGenAcc->Sumw2();
-  hPtMCrecoonly->Sumw2();
-  /*
-  //hEffAcc = hPtGenAcc / hPtGen
-  //hEffReco = hPtMCrecoonly / hPtGenAcc
-  //hEffSelection = hPtMC / hPtMCrecoonly
-  //hEff = hPtMC / hPtGen
 
-  //Acceptance only
-  TH1D* hEffAcc = (TH1D*)hPtGenAcc->Clone("hEffAcc");
-  hEffAcc->Sumw2();
-  hEffAcc->Divide(hEffAcc,hPtGen,1,1,"b");
-  //Eff_reco only
-  TH1D* hEffReco = (TH1D*)hPtMCrecoonly->Clone("hEffReco");
-  hEffReco->Sumw2();
-  hEffReco->Divide(hEffReco,hPtGenAcc,1,1,"b");
-  hEffReco->Divide(hEffReco,hPtGen,1,1,"b");
-  //Eff_selection only
-  TH1D* hEffSelection = (TH1D*)hPtMC->Clone("hEffSelection");
-  hEffSelection->Sumw2();
-  hEffSelection->Divide(hEffSelection,hPtMCrecoonly,1,1,"b");
-  //Full efficiency = Acc * Eff_reco * Eff_selection
-  TH1D* hEff = (TH1D*)hPtMC->Clone("hEff");
-  hEff->Sumw2();
-  hEff->Divide(hPtGen);
-  */
+
 
   //Acceptance
   TH1D* hEffAcc = (TH1D*)hPtGenAcc->Clone("hEffAcc");
-  hEffAcc->Sumw2();
   hEffAcc->Divide(hEffAcc,hPtGen,1,1,"b");
   //Selection
   TH1D* hEffSelection = (TH1D*)hPtMC->Clone("hEffSelection");
-  hEffSelection->Sumw2();
   hEffSelection->Divide(hEffSelection,hPtGenAccWeighted,1,1,"b");
   //Acc * Eff (one shot)
   TH1D* hEffReco = (TH1D*)hPtMCrecoonly->Clone("hEffReco");
-  hEffReco->Sumw2();
   hEffReco->Divide(hEffReco,hPtGen,1,1,"b");
   //Acc * Eff
   TH1D* hEff = (TH1D*)hEffSelection->Clone("hEff");
-  hEff->Sumw2();
-  //hEff->Divide(hPtMC,hPtGen,1,1,"");
   hEff->Multiply(hEff,hEffAcc,1,1);
-
   TH1D* invEff = new TH1D("invEff","",_nBins,_ptBins);
   for(int i=0;i<_nBins;i++)
     {
       invEff->SetBinContent(i+1,1.0/hEff->GetBinContent(i+1));
       invEff->SetBinError(i+1,hEff->GetBinError(i+1)/hEff->GetBinContent(i+1)/hEff->GetBinContent(i+1));
     }
-
   TH1D* hEffdef = (TH1D*)hPtMC->Clone("hEffdef");
-  hEffdef->Sumw2();
   hEffdef->Divide(hPtGen);
+  */
+
+  
+  //2D projection
+  TH2D* hPtMC2D = new TH2D("hPtMC2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  //TH2D* hPtMCrecoonly2D = new TH2D("hPtMCrecoonly2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  TH2D* hPtGen2D = new TH2D("hPtGen2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  //TH2D* hPtGenAcc2D = new TH2D("hPtGenAcc2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  //TH2D* hPtGenAccWeighted2D = new TH2D("hPtGenAccWeighted2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+
+  ntMC->Project("hPtMC2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+  //ntMC->Project("hPtMCrecoonly2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut_recoonly.Data())&&"(Bgen==23333)"));
+  ntGen->Project("hPtGen2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+  //ntGen->Project("hPtGenAcc2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
+  //ntGen->Project("hPtGenAccWeighted2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
+
+  //TH2D* hEffAcc2D = (TH2D*)hPtGenAcc2D->Clone("hEffAcc2D");
+  //hEffAcc2D->Divide(hPtGen2D);
+  //TH2D* hEffSelection2D = (TH2D*)hPtMC2D->Clone("hEffSelection2D");
+  //hEffSelection2D->Divide(hPtGenAccWeighted2D);
+  //TH2D* hEffReco2D = (TH2D*)hPtMCrecoonly2D->Clone("hEffReco2D");
+  //hEffReco2D->Divide(hPtGen2D);
+  //TH2D* hEff2D = (TH2D*)hEffSelection2D->Clone("hEff2D");
+  //hEff2D->Multiply(hEffAcc2D);
+  TH2D* hEff2D = (TH2D*)hPtMC2D->Clone("hEff2D");
+  hEff2D->Divide(hPtGen2D);
+
+  TH2D* invEff2D = new TH2D("invEff2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  for(int i=0;i<nBinsFine;i++)
+    {
+      for(int j=0;j<48;j++)
+	{
+	  invEff2D->SetBinContent(i+1,j+1,1.0/hEff2D->GetBinContent(i+1,j+1));
+	  invEff2D->SetBinError(i+1,j+1,hEff2D->GetBinError(i+1,j+1)/hEff2D->GetBinContent(i+1,j+1)/hEff2D->GetBinContent(i+1,j+1));
+	}
+    }
+
+  hEff2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");
+  hEff2D->GetYaxis()->SetTitle("B^{+} y");
+  hEff2D->GetYaxis()->SetTitleOffset(1.5);
+  hEff2D->GetXaxis()->CenterTitle();
+  hEff2D->GetYaxis()->CenterTitle();
+
+  TCanvas* cEff2D = new TCanvas("","",600,600);
+  cEff2D->cd();
+  hEff2D->Draw("COLZ");
+  cEff2D->SaveAs("Eff2D.png");
+  
 
   /*
   TFile* filenominal = new TFile("ptshape/BDT/MCstudiesPbPb_nominal_Bsbin.root");
@@ -344,6 +363,7 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
     }
   */
   
+  /*
   TH2F* hemptyEff=new TH2F("hemptyEff","",50,_ptBins[0]-5.,_ptBins[_nBins]+5.,10,0.,1.);  
   hemptyEff->GetXaxis()->CenterTitle();
   hemptyEff->GetYaxis()->CenterTitle();
@@ -565,9 +585,13 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   
   gStyle->SetPalette(55);
   TCanvas* canvas2D=new TCanvas("canvas2D","",600,600);
-  
+  */
+
   TFile *fout=new TFile(outputfile.Data(),"recreate");
   fout->cd();
+
+  /*
+  hPtMC->Write();
   hPtGen->Write();
   hEffAcc->Write();
   hEffReco->Write();
@@ -575,7 +599,11 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   hEff->Write();
   invEff->Write();
   hEffdef->Write();
-  hPtMC->Write();
+  */
+
+  hEff2D->Write();
+  invEff2D->Write();
+
   fout->Close();  
   
 }

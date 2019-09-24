@@ -6,7 +6,7 @@ double ptBins[nBins+1] = {5., 50.};
 
 //For Centrality RAA Analysis, designate p_t bins.
 const int nBinsInc=1;
-double ptBinsInc[nBinsInc+1] = {5., 50.};
+double ptBinsInc[nBinsInc+1] = {40., 50.};
 //double ptBinsInc[nBinsInc+1] = {5., 60.};
 
 const int nBinsFine=45;
@@ -14,6 +14,9 @@ double ptBinsFine[nBinsFine+1] = {5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 1
 
 const int nBinsY=4;
 double ptBinsY[nBinsY+1] = {0.0, 0.5, 1.0, 1.5, 2.4};
+
+const int nBinsYFine=24;
+double ptBinsYFine[nBinsYFine+1] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4};
 
 //Use appropriate values for the designated centrality bins!!
 /*
