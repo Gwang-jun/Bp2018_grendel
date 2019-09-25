@@ -200,11 +200,25 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   
   //2D projection
   TH2D* hPtMC2D = new TH2D("hPtMC2D","",nBinsFine,5,50,nBinsYFine,-2.4,2.4);
+  //TH2D* hPtMCrecoonly2D = new TH2D("hPtMCrecoonly2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
   TH2D* hPtGen2D = new TH2D("hPtGen2D","",nBinsFine,5,50,nBinsYFine,-2.4,2.4);
+  //TH2D* hPtGenAcc2D = new TH2D("hPtGenAcc2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
+  //TH2D* hPtGenAccWeighted2D = new TH2D("hPtGenAccWeighted2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
 
   ntMC->Project("hPtMC2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+  //ntMC->Project("hPtMCrecoonly2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut_recoonly.Data())&&"(Bgen==23333)"));
   ntGen->Project("hPtGen2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+  //ntGen->Project("hPtGenAcc2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
+  //ntGen->Project("hPtGenAccWeighted2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
 
+  //TH2D* hEffAcc2D = (TH2D*)hPtGenAcc2D->Clone("hEffAcc2D");
+  //hEffAcc2D->Divide(hPtGen2D);
+  //TH2D* hEffSelection2D = (TH2D*)hPtMC2D->Clone("hEffSelection2D");
+  //hEffSelection2D->Divide(hPtGenAccWeighted2D);
+  //TH2D* hEffReco2D = (TH2D*)hPtMCrecoonly2D->Clone("hEffReco2D");
+  //hEffReco2D->Divide(hPtGen2D);
+  //TH2D* hEff2D = (TH2D*)hEffSelection2D->Clone("hEff2D");
+  //hEff2D->Multiply(hEffAcc2D);
   TH2D* hEff2D = (TH2D*)hPtMC2D->Clone("hEff2D");
   hEff2D->Divide(hPtGen2D);
   TH2D* invEff2D = (TH2D*)hPtGen2D->Clone("invEff2D");

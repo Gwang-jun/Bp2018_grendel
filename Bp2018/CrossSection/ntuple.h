@@ -1,13 +1,14 @@
 #include <TTree.h>
 #include <TMath.h>
 #include <iostream>
+#include "parameters.h"
 
 #ifndef MAX_XB
 #define MAX_XB      20000
 #endif
 
-float  pthatweight;
-float  Ncoll;
+//float  pthatweight;
+//float  Ncoll;
 float  PVz;
 int    hiBin;
 int    HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1;
@@ -92,8 +93,8 @@ bool   Bmu2isAcc[MAX_XB];
 
 void setbranchaddress(TFile* ffile,TTree* fnt)
 {
-  fnt->SetBranchAddress("pthatweight", &pthatweight); 
-  fnt->SetBranchAddress("Ncoll", &Ncoll);
+  //fnt->SetBranchAddress("pthatweight", &pthatweight); 
+  //fnt->SetBranchAddress("Ncoll", &Ncoll);
   fnt->SetBranchAddress("PVz", &PVz);
   fnt->SetBranchAddress("HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1", &HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1); 
   fnt->SetBranchAddress("pprimaryVertexFilter", &pprimaryVertexFilter); 
@@ -112,22 +113,22 @@ void setbranchaddress(TFile* ffile,TTree* fnt)
   fnt->SetBranchAddress("Bpt", Bpt);
   fnt->SetBranchAddress("Bgenpt", Bgenpt);
   fnt->SetBranchAddress("Balpha", Balpha);
-  fnt->SetBranchAddress("Blxy", Blxy);
+  //fnt->SetBranchAddress("Blxy", Blxy);
   fnt->SetBranchAddress("Btrk1Pt", Btrk1Pt);
   fnt->SetBranchAddress("Btrk2Pt", Btrk2Pt);
   fnt->SetBranchAddress("Bmass", Bmass);
-  fnt->SetBranchAddress("Btktkmass", Btktkmass);
-  fnt->SetBranchAddress("Bujpt", Bujpt);
+  //fnt->SetBranchAddress("Btktkmass", Btktkmass);
+  //fnt->SetBranchAddress("Bujpt", Bujpt);
   fnt->SetBranchAddress("Bchi2cl", Bchi2cl);
   fnt->SetBranchAddress("Bdtheta", Bdtheta);
-  fnt->SetBranchAddress("Bujphi", Bujphi);
-  fnt->SetBranchAddress("Btrk1Phi", Btrk1Phi);
-  fnt->SetBranchAddress("Btrk2Phi", Btrk2Phi);
+  //fnt->SetBranchAddress("Bujphi", Bujphi);
+  //fnt->SetBranchAddress("Btrk1Phi", Btrk1Phi);
+  //fnt->SetBranchAddress("Btrk2Phi", Btrk2Phi);
   fnt->SetBranchAddress("BsvpvDistance", BsvpvDistance);
   fnt->SetBranchAddress("BsvpvDisErr", BsvpvDisErr);
-  fnt->SetBranchAddress("BsvpvDistance_2D", BsvpvDistance_2D);
-  fnt->SetBranchAddress("BsvpvDisErr_2D", BsvpvDisErr_2D);
-  fnt->SetBranchAddress("Bujeta", Bujeta);
+  //fnt->SetBranchAddress("BsvpvDistance_2D", BsvpvDistance_2D);
+  //fnt->SetBranchAddress("BsvpvDisErr_2D", BsvpvDisErr_2D);
+  //fnt->SetBranchAddress("Bujeta", Bujeta);
   fnt->SetBranchAddress("Btrk1Eta", Btrk1Eta);
   fnt->SetBranchAddress("Btrk2Eta", Btrk2Eta);
   fnt->SetBranchAddress("Btrk1Dxy1", Btrk1Dxy1);
@@ -172,15 +173,15 @@ void setbranchaddress(TFile* ffile,TTree* fnt)
   fnt->SetBranchAddress("Btrk2StripHit", Btrk2StripHit);
   fnt->SetBranchAddress("Btrk2PtErr", Btrk2PtErr);
   fnt->SetBranchAddress("By", By);
-  fnt->SetBranchAddress("Btktkmass", Btktkmass);
+  //fnt->SetBranchAddress("Btktkmass", Btktkmass);
 }
 
 int findBptbin(float Bpt)
 {
   int n;
-  for(int i=0;i<45;i++)
+  for(int i=0;i<nBinsFine;i++)
     {
-      if(Bpt>=i+5 && Bpt<i+6)
+      if(Bpt>=5+45.0/nBinsFine*i && Bpt<5+45.0/nBinsFine*(i+1))
 	{
 	  n=i;
 	  break;
@@ -192,9 +193,9 @@ int findBptbin(float Bpt)
 int findBybin(float By)
 {
   int n;
-  for(int i=0;i<48;i++)
+  for(int i=0;i<nBinsYFine;i++)
     {
-      if(By>=-2.4+0.1*i && By<-2.3+0.1*i)
+      if(By>=-2.4+4.8/nBinsYFine*i && By<-2.4+4.8/nBinsYFine*(i+1))
 	{
 	  n=i;
 	  break;
