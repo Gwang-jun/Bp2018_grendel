@@ -21,15 +21,15 @@ double ptBinsYFine[nBinsYFine+1] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,
 
 const int nBinsCent=2;
 double ptBinsCent[nBinsCent+1] = {0.*2, 30.*2, 90.*2};
-double TAA[nBinsCent] = {15.41, 1.705};
-double npart[nBinsCent] = {269.1, 54.44};
+double TAA[nBinsCent] = {15.42, 1.704};
+double npart[nBinsCent] = {269.1, 54.45};
 
 
 /*
 const int nBinsCent=1;
 double ptBinsCent[nBinsCent+1] = {0.*2, 90.*2};
 double TAA[nBinsCent] = {6.274};
-double npart[nBinsCent] = {126};
+double npart[nBinsCent] = {126.0};
 */
 
 /*
