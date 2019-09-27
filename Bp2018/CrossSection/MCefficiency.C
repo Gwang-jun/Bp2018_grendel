@@ -15,8 +15,8 @@ Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
-int _nBins = nBins;
-double *_ptBins = ptBins;
+int _nBins = nBinsFine;
+double *_ptBins = ptBinsFine;
 
 void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString selmcgenacceptance="", TString cut_recoonly="", TString cut="",TString label="PP",TString outputfile="test", int useweight=1,Float_t centmin=0., Float_t centmax=100.)
 { 
@@ -123,12 +123,18 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
     //weightBgenpt = "(2.32807290-0.24845949*Bgenpt+0.01337001*Bgenpt*Bgenpt-0.00026320*Bgenpt*Bgenpt*Bgenpt+0.00000170*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
     }
 
-  
+  /*
   TH1D* hPtMC = new TH1D("hPtMC","",_nBins,_ptBins);
   TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",_nBins,_ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
   TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",_nBins,_ptBins);
   TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",_nBins,_ptBins);
+  */
+  TH1D* hPtMC = new TH1D("hPtMC","",nBinsFine,5,50);
+  TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",nBinsFine,5,50);
+  TH1D* hPtGen = new TH1D("hPtGen","",nBinsFine,5,50);
+  TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",nBinsFine,5,50);
+  TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",nBinsFine,5,50);
   TH1D* hPthat = new TH1D("hPthat","",100,0,500);
   TH1D* hPthatweight = new TH1D("hPthatweight","",100,0,500);
 
@@ -191,8 +197,8 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   //Acc * Eff
   TH1D* hEff = (TH1D*)hEffSelection->Clone("hEff");
   hEff->Multiply(hEff,hEffAcc,1,1);
-  TH1D* invEff = new TH1D("invEff","",_nBins,_ptBins);
-  for(int i=0;i<_nBins;i++)
+  TH1D* invEff = new TH1D("invEff","",nBinsFine,5,50);
+  for(int i=0;i<nBinsFine;i++)
     {
       invEff->SetBinContent(i+1,1.0/hEff->GetBinContent(i+1));
       invEff->SetBinError(i+1,hEff->GetBinError(i+1)/hEff->GetBinContent(i+1)/hEff->GetBinContent(i+1));
@@ -204,6 +210,8 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
 
   ntMC->Project("hPtMC2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
   ntGen->Project("hPtGen2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+  hPtMC2D->Sumw2();
+  hPtGen2D->Sumw2();
 
   TH2D* hEff2D = (TH2D*)hPtMC2D->Clone("hEff2D");
   hEff2D->Divide(hPtGen2D);
@@ -219,7 +227,14 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   TCanvas* cEff2D = new TCanvas("","",600,600);
   cEff2D->cd();
   hEff2D->Draw("COLZ");
-  cEff2D->SaveAs("Eff2D.png");
+  cEff2D->SaveAs(Form("plotAverageEff/Eff2D_Cent%.0f-%.0f.png",centmin,centmax));
+  cEff2D->SaveAs(Form("plotAverageEff/Eff2D_Cent%.0f-%.0f.pdf",centmin,centmax));
+
+  TCanvas* cinvEff2D = new TCanvas("","",600,600);
+  cinvEff2D->cd();
+  invEff2D->Draw("COLZ");
+  cinvEff2D->SaveAs(Form("plotAverageEff/invEff2D_Cent%.0f-%.0f.png",centmin,centmax));
+  cinvEff2D->SaveAs(Form("plotAverageEff/invEff2D_Cent%.0f-%.0f.pdf",centmin,centmax));
   
 
   /*

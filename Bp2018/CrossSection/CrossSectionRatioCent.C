@@ -65,39 +65,41 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	//TFile* fileeff = new TFile(efficiency.Data());
 
 
-        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_binned_newpt_Cent30-90.root");
-        TFile* fileeff1 = new TFile("unbinnedfiles/MCstudiesPbPb_newpt_Cent30-90.root");
+        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_full_Cent0-30.root");
+        TFile* fileeff1 = new TFile("unbinnedfiles/MCstudiesPbPb_newpt_Cent0-30.root");
+	TFile* fileinveff1 = new TFile("ROOTfiles/MCstudiesPbPbAverage_0.5GeV_inclusive_Cent0-30.root");
         TH1F* hPtSigmadiff1 = (TH1F*)file1->Get("hPt");
         TH1F* hEff1 = (TH1F*)fileeff1->Get("hEff");
-        hPtSigmadiff1->Divide(hEff1);
-
+	TH1F* hinvEff1 = (TH1F*)fileinveff1->Get("invEffave");
+	//hPtSigmadiff1->Divide(hEff1);
+	hPtSigmadiff1->Multiply(hinvEff1);
         double ptwidth[nBins];
         double coryield1 = 0.0;
         double coryieldErr1 = 0.0;
 
-	/*
-        TFile* file2 = new TFile("unbinnedfiles/yields_Bp_binned_newpt_Cent30-90.root");
+
+        TFile* file2 = new TFile("unbinnedfiles/yields_Bp_full_Cent30-90.root");
         TFile* fileeff2 = new TFile("unbinnedfiles/MCstudiesPbPb_newpt_Cent30-90.root");
+	TFile* fileinveff2 = new TFile("ROOTfiles/MCstudiesPbPbAverage_0.5GeV_inclusive_Cent30-90.root");
         TH1F* hPtSigmadiff2 = (TH1F*)file2->Get("hPt");
         TH1F* hEff2 = (TH1F*)fileeff2->Get("hEff");
-        hPtSigmadiff2->Divide(hEff2);
+	TH1F* hinvEff2 = (TH1F*)fileinveff2->Get("invEffave");
+        //hPtSigmadiff2->Divide(hEff2);
+	hPtSigmadiff2->Multiply(hinvEff2);
         double coryield2 = 0.0;
         double coryieldErr2 = 0.0;
-	*/
 
-	double taa=1.705;
-	
-	hPtSigmadiff1->Scale(1./(2*taa*BRchain));
-	
+
+	//hPtSigmadiff1->Scale(1./(2*6.274*BRchain));//6.274 15.41 1.705
+
         for(int k=0;k<nBins;k++) //must use differential pt bins that are used to calculate inclusive pt corrected yield
           {
             ptwidth[k] = (ptBins[k+1]-ptBins[k])/(ptBins[nBins]-ptBins[0]);
-	    std::cout<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1)<<std::endl;
-	    std::cout<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)<<std::endl;
+	    std::cout<<"ptbin "<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1)<<" pm "<<ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)<<std::endl;
 	    coryield1 += ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1);
             coryieldErr1 += ptwidth[k]*ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)*hPtSigmadiff1->GetBinError(k+1);
-            //coryield2 += ptwidth[k]*hPtSigmadiff2->GetBinContent(k+1);
-            //coryieldErr2 += ptwidth[k]*ptwidth[k]*hPtSigmadiff2->GetBinError(k+1)*hPtSigmadiff2->GetBinError(k+1);
+            coryield2 += ptwidth[k]*hPtSigmadiff2->GetBinContent(k+1);
+            coryieldErr2 += ptwidth[k]*ptwidth[k]*hPtSigmadiff2->GetBinError(k+1)*hPtSigmadiff2->GetBinError(k+1);
           }
 	
 
@@ -108,14 +110,14 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
         //hPtSigmahibin->SetBinError(2,hPtSigmadiff1->GetBinError(2));
 	hPtSigmahibin->SetBinContent(1,coryield1);
         hPtSigmahibin->SetBinError(1,sqrt(coryieldErr1));
-        //hPtSigmahibin->SetBinContent(2,coryield2);
-        //hPtSigmahibin->SetBinError(2,sqrt(coryieldErr2));
+        hPtSigmahibin->SetBinContent(2,coryield2);
+        hPtSigmahibin->SetBinError(2,sqrt(coryieldErr2));
 
-        //hPtSigmahibin->Scale(1./(2*BRchain));
+        hPtSigmahibin->Scale(1./(2*BRchain));
         for(int k=0;k<nBinsCent;k++)
           {
-            //hPtSigmahibin->SetBinContent(k+1,hPtSigmahibin->GetBinContent(k+1)/TAA[k]);
-            //hPtSigmahibin->SetBinError(k+1,hPtSigmahibin->GetBinError(k+1)/TAA[k]);
+            hPtSigmahibin->SetBinContent(k+1,hPtSigmahibin->GetBinContent(k+1)/TAA[k]);
+            hPtSigmahibin->SetBinError(k+1,hPtSigmahibin->GetBinError(k+1)/TAA[k]);
           }
 
         for(int k=0;k<nBinsCent;k++){

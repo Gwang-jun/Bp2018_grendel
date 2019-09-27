@@ -122,17 +122,20 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
         float tpadpos = 1-tpadr;
         if(!isPbPb) tpadr = 1;
 
-	TFile* file = new TFile("unbinnedfiles/yields_Bp_binned_pt_Bsbin_Cent0-90.root");
 	//TFile* file = new TFile(input.Data());
+	TFile* file = new TFile("unbinnedfiles/yields_Bp_binned_pt_Bsbin_Cent0-90.root");
 	TFile* fileeff = new TFile(efficiency.Data());
-	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
+	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_0.5GeV_Bsbin_Cent0-90.root");
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
-	if(doDataCor != 1) hPtSigma->Divide(hEff);
+	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
+	TH1F* hinvEff = (TH1F*)fileinveff->Get("invEffave");
+	//if(doDataCor != 1) hPtSigma->Divide(hEff);
+	hPtSigma->Multiply(hinvEff);
 	//hPtSigma->Scale(1./(2*lumi*BRchain));
 
-	float taa = 6.274;
-	//float taa = 15.41;
-	//float taa = 1.705;
+	float taa = 6.274;//0-90
+	//float taa = 15.41;//0-30
+	//float taa = 1.705;//30-90
 
 	hPtSigma->Scale(1./(2*taa*BRchain));
 	hPtSigma->SetName("hPtSigma");
@@ -174,8 +177,8 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 		    systematic=0.01*systematicsPP(xr[i],0.);
 		  }
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
-		//else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
-		else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
+		else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
+		//else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
 
 		ycrosssysthigh[i]= hPtSigma->GetBinContent(i+1)*systematic;
 		ycrosssystlow[i]= hPtSigma->GetBinContent(i+1)*systematic;

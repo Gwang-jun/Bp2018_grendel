@@ -2,7 +2,6 @@
 #include "parameters.h"
 #include "TF1.h"
 #include <TFitResultPtr.h>
-#include "ntuple.h"
 
 Double_t setparam0=100.;
 Double_t setparam1=5.28;
@@ -27,6 +26,8 @@ TString collisionsystem;
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 double _ErrCor=1;
 
+int plot2D=1;
+
 int _nBins = nBins;
 double *_ptBins = ptBins;
 
@@ -35,9 +36,6 @@ Double_t yieldErr;
 
 void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgselection="1",  TString cut="", TString cutmcgen="", int isMC=0, Double_t luminosity=1., int doweight=0, TString collsyst="PbPb", TString outputfile="", TString npfit="0", int doDataCor = 0, Float_t centmin=0., Float_t centmax=90.)
 {
-  //gStyle->SetPalette(55,0);
-  //gStyle->SetOptStat(0);
-  
   collisionsystem=collsyst;
   if(collisionsystem=="ppInc"||collisionsystem=="PbPbInc"){
     _nBins = nBinsInc;
@@ -69,13 +67,21 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
       selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
     }
 
-gStyle->SetTextSize(0.05);
-gStyle->SetTextFont(42);
-gStyle->SetPadRightMargin(0.043);
-gStyle->SetPadLeftMargin(0.18);
-gStyle->SetPadTopMargin(0.1);
-gStyle->SetPadBottomMargin(0.145);
-gStyle->SetTitleX(.0f);
+  if(plot2D==1)
+    {
+      gStyle->SetPalette(55,0);
+      gStyle->SetOptStat(0);
+    }
+  if(plot2D==0)
+    {
+      gStyle->SetTextSize(0.05);
+      gStyle->SetTextFont(42);
+      gStyle->SetPadRightMargin(0.043);
+      gStyle->SetPadLeftMargin(0.18);
+      gStyle->SetPadTopMargin(0.1);
+      gStyle->SetPadBottomMargin(0.145);
+      gStyle->SetTitleX(.0f);
+    }
 
 void clean0 (TH1D* h);
 void getNPFnPar(TString npfname, float par[]);
@@ -150,46 +156,28 @@ ntMC->AddFriend("ntGen");
 ntMC->AddFriend("mvaTree");
 */
  
- setbranchaddress(inf,nt);
- 
- TFile* Eff2Dfile = new TFile("ROOTfiles/MCstudiesPbPb2D.root");
- TH2D* hEff2D = (TH2D*)Eff2Dfile->Get("hEff2D");
- 
- int nevts=0;
- double sum=0.0;
- for(int i=0;i<nt->GetEntries();i++)
-   {
-     nt->GetEntry(i);
-     for(int j=0;j<Bsize;j++)
-       {
-	 if(!(Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBinsInc[0],ptBinsInc[1]))) continue;
-	 nevts++;
-	 sum+=1.0/hEff2D->GetBinContent(hEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0));
-       }
-   }
- sum=sum/nevts;
- std::cout<<"1/ae average: "<<sum<<std::endl;
- 
-
 TH1D* hMean = new TH1D("hMean","",_nBins,_ptBins);                       
 TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",_nBins,_ptBins); 
 TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",_nBins,_ptBins); 
 TF1 * totalmass;
 
-/*
- TH2D* h2D = new TH2D("h2D","",nBinsFine,ptBinsFine,48,-2.4,2.4);
- nt->Project("h2D","By:Bpt",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBins[0],ptBins[nBins]));
- h2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");                                                                                          
- h2D->GetYaxis()->SetTitle("B^{+} y");                                                                                                      
- h2D->GetYaxis()->SetTitleOffset(1.5);                                                                                                      
- h2D->GetXaxis()->CenterTitle();                                                                                                            
- h2D->GetYaxis()->CenterTitle();                                                                                                                                                                                                                                                            
- TCanvas* c2D = new TCanvas("","",600,600);                                                                                                 
- c2D->cd();                                                                                                                                 
- h2D->Draw("COLZ");                                                                                                                         
- c2D->SaveAs("hMass2D.png");                                                                                                                  
-*/
+ if(plot2D==1)
+   {
 
+     TH2D* h2D = new TH2D("h2D","",nBinsFine,5,60,nBinsYFine,-2.4,2.4);
+     nt->Project("h2D","By:Bpt",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBins[0],ptBins[nBins]));
+     h2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");
+     h2D->GetYaxis()->SetTitle("B^{+} y");
+     h2D->GetYaxis()->SetTitleOffset(1.5);
+     h2D->GetXaxis()->CenterTitle();
+     h2D->GetYaxis()->CenterTitle();
+     TCanvas* c2D = new TCanvas("","",600,600);
+     c2D->cd();
+     h2D->Draw("COLZ");
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_Cent%.0f-%.0f.png",centmin,centmax));
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_Cent%.0f-%.0f.pdf",centmin,centmax));
+   }
+ 
 TString outputf;
 outputf = Form("%s",outputfile.Data());
 TFile* outf = new TFile(outputf.Data(),"recreate");

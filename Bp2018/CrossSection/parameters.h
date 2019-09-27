@@ -1,16 +1,16 @@
-const int nBins=8;
-//double ptBins[nBins+1] = {5., 7.};
-//double ptBins[nBins+1] = {5., 10., 15., 20., 50.};
+const int nBins=4;
+//double ptBins[nBins+1] = {5., 50.};
+double ptBins[nBins+1] = {5., 10., 15., 20., 50.};
 //double ptBins[nBins+1] = {5., 10., 15., 20., 30., 40., 50.};
-double ptBins[nBins+1] = {5., 7., 10., 15., 20., 30., 40., 50., 60.};
+//double ptBins[nBins+1] = {5., 7., 10., 15., 20., 30., 40., 50., 60.};
 
-//For Centrality RAA Analysis, designate p_t bins.
 const int nBinsInc=1;
-double ptBinsInc[nBinsInc+1] = {40., 50.};
+double ptBinsInc[nBinsInc+1] = {5., 50.};
 //double ptBinsInc[nBinsInc+1] = {5., 60.};
 
-const int nBinsFine=45;
+const int nBinsFine=90;
 double ptBinsFine[nBinsFine+1] = {5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25., 26., 27., 28., 29., 30., 31., 32., 33., 34., 35., 36., 37., 38., 39., 40., 41., 42., 43., 44., 45., 46., 47., 48., 49., 50.};
+//double ptBinsFine[nBinsFine+1] = {5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25., 26., 27., 28., 29., 30., 31., 32., 33., 34., 35., 36., 37., 38., 39., 40., 41., 42., 43., 44., 45., 46., 47., 48., 49., 50., 51., 52., 53., 54., 55., 56., 57., 58., 59., 60.};
 
 const int nBinsY=4;
 double ptBinsY[nBinsY+1] = {0.0, 0.5, 1.0, 1.5, 2.4};
@@ -18,20 +18,19 @@ double ptBinsY[nBinsY+1] = {0.0, 0.5, 1.0, 1.5, 2.4};
 const int nBinsYFine=48;
 double ptBinsYFine[nBinsYFine+1] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4};
 
-//Use appropriate values for the designated centrality bins!!
-/*
+
 const int nBinsCent=2;
 double ptBinsCent[nBinsCent+1] = {0.*2, 30.*2, 90.*2};
 double TAA[nBinsCent] = {15.41, 1.705};
 double npart[nBinsCent] = {269.1, 54.44};
-*/
 
 
+/*
 const int nBinsCent=1;
 double ptBinsCent[nBinsCent+1] = {0.*2, 90.*2};
 double TAA[nBinsCent] = {6.274};
 double npart[nBinsCent] = {126};
-
+*/
 
 /*
 const int nBinsCent=1;
