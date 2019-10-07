@@ -164,18 +164,46 @@ TF1 * totalmass;
  if(plot2D==1)
    {
 
-     TH2D* h2D = new TH2D("h2D","",nBinsFine,5,60,nBinsYFine,-2.4,2.4);
-     nt->Project("h2D","By:Bpt",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBins[0],ptBins[nBins]));
+     double LowBinWidth = 0.5;
+     int NLowBin = 5/LowBinWidth;
+     double HighBinWidth = 1;
+     int NHighBin = 50/HighBinWidth;
+     const int BptBin = NHighBin + NLowBin;
+     double BptBinning[BptBin + 1];
+     for(int i = 0; i < NLowBin; i++){
+       BptBinning[i] = 5 + i * LowBinWidth;
+     }
+     for(int i = 0; i <  NHighBin+1; i++){
+       BptBinning[i+NLowBin] = 10 + i * HighBinWidth;
+     }
+
+     TH2D* h2D = new TH2D("h2D","",BptBin,BptBinning,nBinsY,ptBinsY);
+     nt->Project("h2D","abs(By):Bpt",Form("%s&&Bpt>%f&&Bpt<%f&&((Bpt>5&&Bpt<10&&TMath::Abs(By)>1.5)||(Bpt>10))",seldata.Data(),ptBins[0],ptBins[nBins]));
      h2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");
-     h2D->GetYaxis()->SetTitle("B^{+} y");
+     h2D->GetYaxis()->SetTitle("B^{+} |y|");
      h2D->GetYaxis()->SetTitleOffset(1.5);
      h2D->GetXaxis()->CenterTitle();
      h2D->GetYaxis()->CenterTitle();
      TCanvas* c2D = new TCanvas("","",600,600);
      c2D->cd();
      h2D->Draw("COLZ");
-     c2D->SaveAs(Form("plotAverageEff/hMass2D_Cent%.0f-%.0f.png",centmin,centmax));
-     c2D->SaveAs(Form("plotAverageEff/hMass2D_Cent%.0f-%.0f.pdf",centmin,centmax));
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_data_hyperfine_Cent%.0f-%.0f.png",centmin,centmax));
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_data_hyperfine_Cent%.0f-%.0f.pdf",centmin,centmax));
+
+     /*
+     TH2D* h2D = new TH2D("h2D","",45,5,50,60,0,180);
+     nt->Project("h2D","hiBin:Bpt",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptBins[0],ptBins[nBins]));
+     h2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");
+     h2D->GetYaxis()->SetTitle("B^{+} hiBin (Cent.*2)");
+     h2D->GetYaxis()->SetTitleOffset(1.5);
+     h2D->GetXaxis()->CenterTitle();
+     h2D->GetYaxis()->CenterTitle();
+     TCanvas* c2D = new TCanvas("","",600,600);
+     c2D->cd();
+     h2D->Draw("COLZ");
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_hiBin_Cent%.0f-%.0f.png",centmin,centmax));
+     c2D->SaveAs(Form("plotAverageEff/hMass2D_hiBin_Cent%.0f-%.0f.pdf",centmin,centmax));
+     */
    }
  
 TString outputf;
@@ -458,51 +486,8 @@ void getNPFnPar(TString npfname, float par[]){
   f->Draw("same");
   c->RedrawAxis();
 
-  /*  
-  TF1 *massdiff0 = new TF1(Form("fmassdiff0%d",count),"([2]*TMath::Gaus(x,[0],[1])/(sqrt(2*3.14159)*[1])+(1-[2])*TMath::Gaus(x,[0],[3])/(sqrt(2*3.14159)*[3]))");
-  massdiff0->SetParameters(f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
-  massdiff0->SetParError(0,f->GetParError(1));
-  massdiff0->SetParError(1,f->GetParError(2));
-  massdiff0->SetParError(2,f->GetParError(7));
-  massdiff0->SetParError(3,f->GetParError(8));
-
-
-  TF1 *massdiff7 = new TF1(Form("fmassdiff7%d",count),"[0]*(TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])-TMath::Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))");
-  massdiff7->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(8));
-  massdiff7->SetParError(0,f->GetParError(0));
-  massdiff7->SetParError(1,f->GetParError(1));
-  massdiff7->SetParError(2,f->GetParError(2));
-  massdiff7->SetParError(3,f->GetParError(8));
-
-
-  TF1 *massdiff1 = new TF1(Form("fmassdiff1%d",count),"[0]*([3]*(x-[1])/([2]*[2])*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[3])*(x-[1])/([4]*[4])*TMath::Gaus(x,[1],[4])/(sqrt(2*3.14159)*[4]))");
-  massdiff1->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8));
-  massdiff1->SetParError(0,f->GetParError(0));
-  massdiff1->SetParError(1,f->GetParError(1));
-  massdiff1->SetParError(2,f->GetParError(2));
-  massdiff1->SetParError(3,f->GetParError(7));
-  massdiff1->SetParError(4,f->GetParError(8));
-
-
-  TF1 *massdiff2 = new TF1(Form("fmassdiff2%d",count),"[0]*([3]*((x-[1])*(x-[1])/([2]*[2]*[2])-1.0/[2])*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2]))");
-  massdiff2->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7));
-  massdiff2->SetParError(0,f->GetParError(0));
-  massdiff2->SetParError(1,f->GetParError(1));
-  massdiff2->SetParError(2,f->GetParError(2));
-  massdiff1->SetParError(3,f->GetParError(7));
-
-
-  TF1 *massdiff8 = new TF1(Form("fmassdiff8%d",count),"[0]*((1-[2])*((x-[1])*(x-[1])/([3]*[3]*[3])-1.0/[3])*TMath::Gaus(x,[1],[3])/(sqrt(2*3.14159)*[3]))");
-  massdiff8->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(7),f->GetParameter(8));
-  massdiff8->SetParError(0,f->GetParError(0));
-  massdiff8->SetParError(1,f->GetParError(1));
-  massdiff8->SetParError(2,f->GetParError(7));
-  massdiff8->SetParError(3,f->GetParError(8));
-  */
-
   yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
   yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
-  //yieldErr = (massdiff0->Integral(minhisto,maxhisto)*mass->GetParError(0)+massdiff7->Integral(minhisto,maxhisto)*mass->GetParError(7)+massdiff1->Integral(minhisto,maxhisto)*mass->GetParError(1)+massdiff2->Integral(minhisto,maxhisto)*mass->GetParError(2)+massdiff8->Integral(minhisto,maxhisto)*mass->GetParError(8))/binwidthmass;
   printf("p_t bin %.0f-%.0f     yield: %f     yieldErr: %f\n", ptmin, ptmax, yield, yieldErr);
   
   Double_t Signal = mass->Integral(5.19932,5.35932)/binwidthmass; //B+ mass_pdg=5.27932GeV, signal region = pm 0.08GeV

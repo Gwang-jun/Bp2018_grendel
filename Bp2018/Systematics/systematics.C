@@ -20,10 +20,10 @@ const int AnaBins=8;
 double AnaPtBins[AnaBins+1] = {5.,7.,10.,15.,20.,30.,40.,50.,60.};
 
 const int nPtBinsCent=1;
-double PtBinsCent[nPtBinsCent+1] = {5., 50.};
+double PtBinsCent[nPtBinsCent+1] = {5.,50.};
 
-const int nCentBins=2;
-double CentBins[nCentBins+1] = {0.,30.,90.};
+const int nCentBins=1;
+double CentBins[nCentBins+1] = {0.,90.};
 
 // =============================================================================================================
 // B meson decay

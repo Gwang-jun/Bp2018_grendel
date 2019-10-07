@@ -10,6 +10,7 @@
 //float  pthatweight;
 //float  Ncoll;
 float  PVz;
+int    HiBin;
 int    hiBin;
 int    HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1;
 int    pprimaryVertexFilter;
@@ -20,10 +21,10 @@ double BDT_7_10[MAX_XB];
 double BDT_10_15[MAX_XB];
 double BDT_15_20[MAX_XB];
 double BDT_20_30[MAX_XB];
-double BDT_30_50[MAX_XB];
-double BDT_50_100[MAX_XB];
+double BDT_30_40[MAX_XB];
+double BDT_40_50[MAX_XB];
+double BDT_50_60[MAX_XB];
 
-int    HiBin;
 int    Bsize;
 float  Bgen[MAX_XB];
 //float  Bpt[MAX_XB];
@@ -98,6 +99,7 @@ bool   Bmu2isAcc[MAX_XB];
 void setbranchaddress(TFile* ffile,TTree* fnt)
 {
   fnt->SetBranchAddress("HiBin", &HiBin);
+  fnt->SetBranchAddress("hiBin", &hiBin);
   //fnt->SetBranchAddress("Bpt", Bpt);
   fnt->SetBranchAddress("Bpt", &Bpt);
   //fnt->SetBranchAddress("Bmass", Bmass);
@@ -109,6 +111,25 @@ void setbranchaddress(TFile* ffile,TTree* fnt)
 int findBptbin(float Bpt)
 {
   int n;
+  for(int i=0;i<10;i++)
+    {
+      if(Bpt>5.0+0.5*i && Bpt<5.0+0.5*(i+1))
+	{
+	  n=i+1;
+	  break;
+	}
+    }
+  for(int j=0;j<50;j++)
+    {
+      if(Bpt>10.0+j && Bpt<10.0+(j+1))
+	{
+	  n=j+11;
+	  break;
+	}
+    }
+
+  /*
+  int n;
   for(int i=0;i<nBinsFine;i++)
     {
       if(Bpt>5.0+45.0/nBinsFine*i && Bpt<5.0+45.0/nBinsFine*(i+1))
@@ -117,15 +138,40 @@ int findBptbin(float Bpt)
 	  break;
 	}
     }
+  */
+
   return n;
 }
 
 int findBybin(float By)
 {
   int n;
+  if(abs(By)>0.0 && abs(By)<0.5) n=1;
+  if(abs(By)>0.5 && abs(By)<1.0) n=2;
+  if(abs(By)>1.0 && abs(By)<1.5) n=3;
+  if(abs(By)>1.5 && abs(By)<2.0) n=4;
+  if(abs(By)>2.0 && abs(By)<2.4) n=5;
+  
+  /*
   for(int i=0;i<nBinsYFine;i++)
     {
       if(By>-2.4+4.8/nBinsYFine*i && By<-2.4+4.8/nBinsYFine*(i+1))
+	{
+	  n=i+1;
+	  break;
+	}
+    }
+  */
+  
+  return n;
+}
+
+int findCentbin(float HiBin)
+{
+  int n;
+  for(int i=0;i<40;i++)
+    {
+      if(HiBin>=60+3*i && HiBin<60+3*(i+1))
 	{
 	  n=i+1;
 	  break;

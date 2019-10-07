@@ -15,8 +15,8 @@ Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
-int _nBins = nBinsFine;
-double *_ptBins = ptBinsFine;
+int _nBins = nBins;
+double *_ptBins = ptBins;
 
 void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString selmcgenacceptance="", TString cut_recoonly="", TString cut="",TString label="PP",TString outputfile="test", int useweight=1,Float_t centmin=0., Float_t centmax=100.)
 { 
@@ -39,13 +39,18 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   hiBinMax = centmax*2;
   centMin = centmin;
   centMax = centmax;
+
+  //cut_recoonly=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut_recoonly.Data());
+  //cut=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut.Data());
   
   if(isPbPb==1)
     {
+
       selmcgen = selmcgen+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
       selmcgenacceptance=selmcgenacceptance+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
       cut_recoonly=cut_recoonly+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
       cut=cut+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
+
     }
   
   std::cout<<"selmcgen="<<selmcgen<<std::endl;
@@ -105,7 +110,8 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   if(useweight==1) { //PbPb
     weighpthat = "pthatweight";
     weightHiBin = "Ncoll";
-    weightPVz = "(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
+    weightPVz = "(TMath::Gaus(PVz,0.432315,4.874300)/(sqrt(2*3.14159)*4.874300))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
+    //weightPVz = "(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
     //weightGpt = "(5.102569-0.999261*Gpt+0.033369*Gpt*Gpt)*Tmath::Exp(-0.187060*Gpt)+1.080465";
     //weightBgenpt = "(5.102569-0.999261*Bgenpt+0.033369*Bgenpt*Bgenpt)*TMath::Exp(-0.187060*Bgenpt)+1.080465";
     //weightGpt = "(2.907795+-0.436572*Gpt+0.006372*Gpt*Gpt)*TMath::Exp(-0.157563*Gpt)+1.01308";
@@ -130,11 +136,25 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",_nBins,_ptBins);
   TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",_nBins,_ptBins);
   */
-  TH1D* hPtMC = new TH1D("hPtMC","",nBinsFine,5,50);
-  TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",nBinsFine,5,50);
-  TH1D* hPtGen = new TH1D("hPtGen","",nBinsFine,5,50);
-  TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",nBinsFine,5,50);
-  TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",nBinsFine,5,50);
+
+  double LowBinWidth = 0.5;
+  int NLowBin = 5/LowBinWidth;
+  double HighBinWidth = 1;
+  int NHighBin = 50/HighBinWidth;
+  const int BptBin = NHighBin + NLowBin;
+  double BptBinning[BptBin + 1];
+  for(int i = 0; i < NLowBin; i++){
+    BptBinning[i] = 5 + i * LowBinWidth;
+  }
+  for(int i = 0; i <  NHighBin+1; i++){
+  BptBinning[i+NLowBin] = 10 + i * HighBinWidth;
+  }
+
+  TH1D* hPtMC = new TH1D("hPtMC","",BptBin,BptBinning);
+  TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",BptBin,BptBinning);
+  TH1D* hPtGen = new TH1D("hPtGen","",BptBin,BptBinning);
+  TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",BptBin,BptBinning);
+  TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",BptBin,BptBinning);
   TH1D* hPthat = new TH1D("hPthat","",100,0,500);
   TH1D* hPthatweight = new TH1D("hPthatweight","",100,0,500);
 
@@ -143,7 +163,6 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   ntGen->Project("hPtGen","Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgen.Data())));
   ntGen->Project("hPtGenAcc","Gpt",TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
   ntGen->Project("hPtGenAccWeighted","Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
-  
 
   /*
   ////// tag & probe scaling factor
@@ -197,19 +216,23 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   //Acc * Eff
   TH1D* hEff = (TH1D*)hEffSelection->Clone("hEff");
   hEff->Multiply(hEff,hEffAcc,1,1);
-  TH1D* invEff = new TH1D("invEff","",nBinsFine,5,50);
-  for(int i=0;i<nBinsFine;i++)
+  TH1D* invEff = new TH1D("invEff","",BptBin,BptBinning);
+  for(int i=0;i<BptBin;i++)
+    //TH1D* invEff = new TH1D("invEff","",40,hiBinMin,hiBinMax);
+    //for(int i=0;i<40;i++)
     {
       invEff->SetBinContent(i+1,1.0/hEff->GetBinContent(i+1));
       invEff->SetBinError(i+1,hEff->GetBinError(i+1)/hEff->GetBinContent(i+1)/hEff->GetBinContent(i+1));
     }
   
   //2D projection
-  TH2D* hPtMC2D = new TH2D("hPtMC2D","",nBinsFine,5,50,nBinsYFine,-2.4,2.4);
-  TH2D* hPtGen2D = new TH2D("hPtGen2D","",nBinsFine,5,50,nBinsYFine,-2.4,2.4);
+  TH2D* hPtMC2D = new TH2D("hPtMC2D","",BptBin,BptBinning,nBinsY,ptBinsY);
+  TH2D* hPtGen2D = new TH2D("hPtGen2D","",BptBin,BptBinning,nBinsY,ptBinsY);
+  //TH2D* hPtMC2D = new TH2D("hPtMC2D","",BptBin,BptBinning,100,0.0,2.4);
+  //TH2D* hPtGen2D = new TH2D("hPtGen2D","",BptBin,BptBinning,100,0.0,2.4);
 
-  ntMC->Project("hPtMC2D","By:Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
-  ntGen->Project("hPtGen2D","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+  ntMC->Project("hPtMC2D","abs(By):Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+  ntGen->Project("hPtGen2D","abs(Gy):Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
   hPtMC2D->Sumw2();
   hPtGen2D->Sumw2();
 
@@ -219,7 +242,7 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   invEff2D->Divide(hPtMC2D);
 
   hEff2D->GetXaxis()->SetTitle("B^{+} p_{T} (GeV/c)");
-  hEff2D->GetYaxis()->SetTitle("B^{+} y");
+  hEff2D->GetYaxis()->SetTitle("B^{+} |y|");
   hEff2D->GetYaxis()->SetTitleOffset(1.5);
   hEff2D->GetXaxis()->CenterTitle();
   hEff2D->GetYaxis()->CenterTitle();
@@ -580,14 +603,16 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   fout->cd();
 
 
-  hPtMC->Write();
-  hPtGen->Write();
-  hEffAcc->Write();
-  hEffReco->Write();
-  hEffSelection->Write();
-  hEff->Write();
-  invEff->Write();
+  //hPtMC->Write();
+  //hPtGen->Write();
+  //hEffAcc->Write();
+  //hEffReco->Write();
+  //hEffSelection->Write();
+  //hEff->Write();
+  //invEff->Write();
 
+  hPtMC2D->Write();
+  hPtGen2D->Write();
   hEff2D->Write();
   invEff2D->Write();
 

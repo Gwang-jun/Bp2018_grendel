@@ -1,7 +1,7 @@
 void canvasSigmaBplusRatioPbPb_cent30-90()
 {
 //=========Macro generated from canvas: cSigma/
-//=========  (Thu Sep 26 21:56:29 2019) by ROOT version 6.16/00
+//=========  (Mon Sep 30 23:25:37 2019) by ROOT version 6.16/00
    TCanvas *cSigma = new TCanvas("cSigma", "",0,0,600,600);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -48,18 +48,12 @@ void canvasSigmaBplusRatioPbPb_cent30-90()
    hemptySigma__1->GetZaxis()->SetTitleOffset(1);
    hemptySigma__1->GetZaxis()->SetTitleFont(42);
    hemptySigma__1->Draw("");
-   Double_t xAxis1[5] = {5, 10, 15, 20, 50}; 
+   Double_t xAxis1[2] = {5, 50}; 
    
-   TH1D *hPtSigma__2 = new TH1D("hPtSigma__2","",4, xAxis1);
-   hPtSigma__2->SetBinContent(1,1.355889e+07);
-   hPtSigma__2->SetBinContent(2,3244437);
-   hPtSigma__2->SetBinContent(3,771461.8);
-   hPtSigma__2->SetBinContent(4,92980.94);
-   hPtSigma__2->SetBinError(1,1462271);
-   hPtSigma__2->SetBinError(2,190870.1);
-   hPtSigma__2->SetBinError(3,52190.78);
-   hPtSigma__2->SetBinError(4,5266.233);
-   hPtSigma__2->SetEntries(143.3578);
+   TH1D *hPtSigma__2 = new TH1D("hPtSigma__2","",1, xAxis1);
+   hPtSigma__2->SetBinContent(1,1435146);
+   hPtSigma__2->SetBinError(1,86680.86);
+   hPtSigma__2->SetEntries(274.1234);
    hPtSigma__2->SetLineWidth(2);
    hPtSigma__2->SetMarkerStyle(20);
    hPtSigma__2->SetMarkerSize(0.84);
@@ -79,37 +73,19 @@ void canvasSigmaBplusRatioPbPb_cent30-90()
    hPtSigma__2->GetZaxis()->SetTitleFont(42);
    hPtSigma__2->Draw("epsame");
    
-   Double_t gaeCrossSyst_fx3001[4] = {
-   6,
-   8.5,
-   12.5,
-   17.5};
-   Double_t gaeCrossSyst_fy3001[4] = {
-   1.355889e+07,
-   3244437,
-   771461.8,
-   92980.94};
-   Double_t gaeCrossSyst_felx3001[4] = {
-   1,
-   1.5,
-   2.5,
+   Double_t gaeCrossSyst_fx3001[1] = {
+   7.5};
+   Double_t gaeCrossSyst_fy3001[1] = {
+   1435146};
+   Double_t gaeCrossSyst_felx3001[1] = {
    2.5};
-   Double_t gaeCrossSyst_fely3001[4] = {
-   3344199,
-   566205,
-   85252.93,
-   8568.002};
-   Double_t gaeCrossSyst_fehx3001[4] = {
-   1,
-   1.5,
-   2.5,
+   Double_t gaeCrossSyst_fely3001[1] = {
+   279332.1};
+   Double_t gaeCrossSyst_fehx3001[1] = {
    2.5};
-   Double_t gaeCrossSyst_fehy3001[4] = {
-   3344199,
-   566205,
-   85252.93,
-   8568.002};
-   TGraphAsymmErrors *grae = new TGraphAsymmErrors(4,gaeCrossSyst_fx3001,gaeCrossSyst_fy3001,gaeCrossSyst_felx3001,gaeCrossSyst_fehx3001,gaeCrossSyst_fely3001,gaeCrossSyst_fehy3001);
+   Double_t gaeCrossSyst_fehy3001[1] = {
+   279332.1};
+   TGraphAsymmErrors *grae = new TGraphAsymmErrors(1,gaeCrossSyst_fx3001,gaeCrossSyst_fy3001,gaeCrossSyst_felx3001,gaeCrossSyst_fehx3001,gaeCrossSyst_fely3001,gaeCrossSyst_fehy3001);
    grae->SetName("gaeCrossSyst");
    grae->SetTitle("Graph");
    grae->SetFillColor(1);
@@ -118,9 +94,9 @@ void canvasSigmaBplusRatioPbPb_cent30-90()
    grae->SetMarkerStyle(20);
    grae->SetMarkerSize(0.8);
    
-   TH1F *Graph_gaeCrossSyst3001 = new TH1F("Graph_gaeCrossSyst3001","Graph",100,3.5,21.5);
-   Graph_gaeCrossSyst3001->SetMinimum(75971.64);
-   Graph_gaeCrossSyst3001->SetMaximum(1.858495e+07);
+   TH1F *Graph_gaeCrossSyst3001 = new TH1F("Graph_gaeCrossSyst3001","Graph",100,4.5,10.5);
+   Graph_gaeCrossSyst3001->SetMinimum(1099948);
+   Graph_gaeCrossSyst3001->SetMaximum(1770345);
    Graph_gaeCrossSyst3001->SetDirectory(0);
    Graph_gaeCrossSyst3001->SetStats(0);
 

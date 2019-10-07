@@ -123,9 +123,9 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
         if(!isPbPb) tpadr = 1;
 
 	//TFile* file = new TFile(input.Data());
-	TFile* file = new TFile("unbinnedfiles/yields_Bp_binned_pt_Bsbin_Cent0-90.root");
+	TFile* file = new TFile("unbinnedfiles/yields_Bp_Bsbin_pt_Cent0-90.root");
 	TFile* fileeff = new TFile(efficiency.Data());
-	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_0.5GeV_Bsbin_Cent0-90.root");
+	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_2D_Bsbin_Cent0-90.root");
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
 	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
 	TH1F* hinvEff = (TH1F*)fileinveff->Get("invEffave");
@@ -177,7 +177,7 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 		    systematic=0.01*systematicsPP(xr[i],0.);
 		  }
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
-		else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
+		//else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
 
 		ycrosssysthigh[i]= hPtSigma->GetBinContent(i+1)*systematic;
@@ -481,11 +481,11 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	hemptyEff->Draw();
 	cEff->cd();
 	hemptyEff->Draw();
-	hEff->SetLineWidth(2);
-	hEff->SetLineColor(1);
-	hEff->SetMarkerStyle(20);
-	hEff->SetMarkerSize(1.2);
-	hEff->Draw("same");
+	//hEff->SetLineWidth(2);
+	//hEff->SetLineColor(1);
+	//hEff->SetMarkerStyle(20);
+	//hEff->SetMarkerSize(1.2);
+	//hEff->Draw("same");
 	if(!isPbPb) cEff->SaveAs(Form("plotOthers/efficiency%s%s.pdf",label.Data(),_postfix.Data()));
 	else cEff->SaveAs(Form("plotOthers/efficiency%s_cent%.0f-%.0f%s.pdf",label.Data(),centMin,centMax,_postfix.Data()));
 	if(!isPbPb) cEff->SaveAs(Form("plotOthers/efficiency%s%s.png",label.Data(),_postfix.Data()));

@@ -3,7 +3,8 @@
 #include <TFitResultPtr.h>
 #include "ntuple2.h"
 
-TString inputdataname = "/raid5/data/gwangjun/selected_data_ntKp_PbPb_2018_new_train_BDT.root";
+//TString inputdataname = "/raid5/data/gwangjun/selected_data_ntKp_PbPb_2018_new_train_BDT.root";
+TString inputdataname = "/raid5/data/gwangjun/selected_data_ntKp_PbPb_2018_MuonJSON_BDT.root";
 
 TString seldata;
 TString selmc;
@@ -12,10 +13,15 @@ TString selmcgen;
 TString collisionsystem;
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
+bool useTNP = 1;
+
 void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgselection="1",  TString cut="", TString cutmcgen="", int isMC=0, Double_t luminosity=1., int doweight=0, TString collsyst="PbPb", TString outputfile="", TString npfit="0", int doDataCor = 0, Float_t centmin=0., Float_t centmax=90.)
 {
-  TString inputeffname = Form("ROOTfiles/MCstudiesPbPb2D_0.5GeV_Cent%.0f-%.0f.root",centmin,centmax);
-  TString outputeffname = Form("ROOTfiles/MCstudiesPbPbAverage_0.5GeV_inclusive_Cent%.0f-%.0f.root",centmin,centmax);
+  //TString inputeffname = Form("ROOTfiles/MCstudiesPbPb2D_Bptweight_Cent%.0f-%.0f.root",centmin,centmax);
+  //TString outputeffname = Form("ROOTfiles/MCstudiesPbPbAverage_Bptweight_Cent%.0f-%.0f.root",centmin,centmax);
+  TString inputeffname = Form("ROOTfiles/MCstudiesPbPb_2D_Cent%.0f-%.0f.root",centmin,centmax);
+  TString outputeffname = Form("ROOTfiles/MCstudiesPbPbAverage_2D_Cent%.0f-%.0f.root",centmin,centmax);
+  TString inputTNPname = Form("ROOTfiles/TNP2D_Bplus_Cent%.0f-%.0f.root",centmin,centmax);
 
   hiBinMin = centmin*2;
   hiBinMax = centmax*2;
@@ -24,21 +30,6 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
 
   if (!(usePbPb==1||usePbPb==0)) std::cout<<"ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, you are using a non valid isPbPb option"<<std::endl;
   bool isPbPb=(bool)(usePbPb);
-
-  if(!isPbPb)
-    {
-      seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
-      selmceff = Form("%s&&%s",trgselection.Data(),cut.Data());
-      selmcgen = Form("%s",cutmcgen.Data());
-      selmc = Form("%s&&%s",trgselection.Data(),cut.Data());
-    }
-  else
-    {
-      seldata = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
-      selmceff = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
-      selmcgen = Form("%s&&hiBin>=%f&&hiBin<=%f",cutmcgen.Data(),hiBinMin,hiBinMax);
-      selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
-    }
 
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -58,18 +49,25 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
   
   setbranchaddress(inf,nt);
   
-  /*
   TFile* Eff2Dfile = new TFile(inputeffname.Data());
   TH2D* hEff2D = (TH2D*)Eff2Dfile->Get("hEff2D");
   TH2D* invEff2D = (TH2D*)Eff2Dfile->Get("invEff2D");
+  TFile* TNP2D = new TFile(inputTNPname.Data());
+  TH2D* tnp_scale = (TH2D*)TNP2D->Get("tnp_scale");
+  TH2D* tnp_total_d = (TH2D*)TNP2D->Get("tnp_total_d");
+  TH2D* tnp_total_u = (TH2D*)TNP2D->Get("tnp_total_u");
 
   int nevts[nBins];
-  float sum[nBins], sumerr[nBins];
+  float sum[nBins], sumerr[nBins], sum_d[nBins], sumerr_d[nBins], sum_u[nBins], sumerr_u[nBins];
   for(int i=0;i<nBins;i++)
     {
       nevts[i]=0;
       sum[i]=0.0;
       sumerr[i]=0.0;
+      sum_d[i]=0.0;
+      sumerr_d[i]=0.0;
+      sum_u[i]=0.0;
+      sumerr_u[i]=0.0;
     }
 
   for(int i=0;i<nt->GetEntries();i++)
@@ -81,13 +79,30 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
 	  if(!(Bpt>ptBins[k] && Bpt<ptBins[k+1] && HiBin>=centMin && HiBin<centMax)) continue;
 	  if(hEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))==0) continue;
 	  nevts[k]++;
-	  sum[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)));
-	  sumerr[k]+=invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))*invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)));
+
+	  if(!useTNP)
+	    {
+	      sum[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)));
+	      sumerr[k]+=invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))*invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)));
+	    }
+
+	  if(useTNP)
+	    {
+	      sum[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)));
+	      sumerr[k]+=(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By))))*(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By))));
+	      
+	      sum_d[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0-tnp_total_d->GetBinContent(tnp_total_d->GetBin(findBptbin(Bpt),findBybin(By)))));
+	      sumerr_d[k]+=(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0-tnp_total_d->GetBinContent(tnp_total_d->GetBin(findBptbin(Bpt),findBybin(By))))))*(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0-tnp_total_d->GetBinContent(tnp_total_d->GetBin(findBptbin(Bpt),findBybin(By))))));
+	      
+	      sum_u[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0+tnp_total_u->GetBinContent(tnp_total_u->GetBin(findBptbin(Bpt),findBybin(By)))));
+	      sumerr_u[k]+=(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0+tnp_total_u->GetBinContent(tnp_total_u->GetBin(findBptbin(Bpt),findBybin(By))))))*(invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt),findBybin(By)))/(tnp_scale->GetBinContent(tnp_scale->GetBin(findBptbin(Bpt),findBybin(By)))*(1.0+tnp_total_u->GetBinContent(tnp_total_u->GetBin(findBptbin(Bpt),findBybin(By))))));
+	    }
+
 	}
    }
-  */
 
 
+  /*
   TFile* Eff1Dfile = new TFile(inputeffname.Data());
   TH1D* hEff1D = (TH1D*)Eff1Dfile->Get("hEff");
   TH1D* invEff1D = (TH1D*)Eff1Dfile->Get("invEff");
@@ -100,6 +115,7 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
       sum[i]=0.0;
       sumerr[i]=0.0;
     }
+
 
   for(int i=0;i<nt->GetEntries();i++)
     {
@@ -114,39 +130,64 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
 	  sumerr[k]+=invEff1D->GetBinError(invEff1D->GetBin(findBptbin(Bpt)))*invEff1D->GetBinError(invEff1D->GetBin(findBptbin(Bpt)));
 	}
    }
-  
+  */
+
   /*
   for(int i=0;i<nt->GetEntries();i++)
     {
       nt->GetEntry(i);
-      for(int j=0;j<Bsize;j++)
-       {
-	 if(!(pprimaryVertexFilter && phfCoincFilter2Th4 && pclusterCompatibilityFilter && Btrk1Pt[j]>0.9 && Bpt[j]>5.0 && (BsvpvDistance[j]/BsvpvDisErr[j])>2.0 && Bchi2cl[j]>0.05 && TMath::Abs(Btrk1Eta[j])<2.4 && TMath::Abs(By[j])<2.4 && TMath::Abs(PVz)<15 && Bmass[j]>5 && Bmass[j]<6 && TMath::Abs(Bmumumass[j]-3.096900)<0.15 && Bmu1SoftMuID[j] && Bmu2SoftMuID[j] && ((TMath::Abs(Bmu1eta[j])<1.2 && Bmu1pt[j]>3.5) || (TMath::Abs(Bmu1eta[j])>1.2 && TMath::Abs(Bmu1eta[j])<2.1 && Bmu1pt[j]>5.47-1.89*TMath::Abs(Bmu1eta[j])) || (TMath::Abs(Bmu1eta[j])>2.1 && TMath::Abs(Bmu1eta[j])<2.4 && Bmu1pt[j]>1.5)) && ((TMath::Abs(Bmu2eta[j])<1.2 && Bmu2pt[j]>3.5) || (TMath::Abs(Bmu2eta[j])>1.2 && TMath::Abs(Bmu2eta[j])<2.1 && Bmu2pt[j]>5.47-1.89*TMath::Abs(Bmu2eta[j])) || (TMath::Abs(Bmu2eta[j])>2.1 && TMath::Abs(Bmu2eta[j])<2.4 && Bmu2pt[j]>1.5)) && Bmu1isTriggered[j] && Bmu2isTriggered[j] && (Btrk1PixelHit[j]+Btrk1StripHit[j])>=11 && (Btrk1Chi2ndf[j]/(Btrk1nStripLayer[j]+Btrk1nPixelLayer[j]))<0.18 && TMath::Abs(Btrk1PtErr[j]/Btrk1Pt[j])<0.1 && ((Bpt[j]>5 && Bpt[j]<7 && (BsvpvDistance[j]/BsvpvDisErr[j])>12 && cos(Bdtheta[j])>0.95 && BDT_5_7[j]>0.07) || (Bpt[j]>7 && Bpt[j]<10 && BDT_7_10[j]>0.08) || (Bpt[j]>10 && Bpt[j]<15 && BDT_10_15[j]>0.09) || (Bpt[j]>15 && Bpt[j]<20 && BDT_15_20[j]>0.09) || (Bpt[j]>20 && Bpt[j]<30 && BDT_20_30[j]>0.07) || (Bpt[j]>30 && Bpt[j]<50 && BDT_30_50[j]>0.12) || (Bpt[j]>50 && Bpt[j]<100 && BDT_50_100[j]>0.24)))) continue;
-	 for(int k=0;k<nBins;k++)
-	   {
-	     if(!(Bpt[j]>ptBins[k] && Bpt[j]<ptBins[k+1])) continue;
-	     if(hEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0))==0) continue;
-	     nevts[k]++;
-	     sum[k]+=invEff2D->GetBinContent(invEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0));
-	     sumerr[k]+=invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0))*invEff2D->GetBinError(invEff2D->GetBin(findBptbin(Bpt[j]),findBybin(By[j]),0));
-	   }
-       }
+      for(int k=0;k<nBins;k++)
+	{
+	  if(!(TMath::Abs(Bmass-5.27932)<0.08)) continue;
+	  if(!(Bpt>ptBins[k] && Bpt<ptBins[k+1] && HiBin>=centmin && HiBin<centmax)) continue;
+	  if(hEff1D->GetBinContent(invEff1D->GetBin(findCentbin(HiBin)))==0) continue;
+	  nevts[k]++;
+	  sum[k]+=invEff1D->GetBinContent(invEff1D->GetBin(findCentbin(HiBin)));
+	  sumerr[k]+=invEff1D->GetBinError(invEff1D->GetBin(findCentbin(HiBin)))*invEff1D->GetBinError(invEff1D->GetBin(findCentbin(HiBin)));
+	}
    }
   */
-
+  
   TH1F* invEffave = new TH1F("invEffave","",nBins,ptBins);
+  TH1F* invEffave_d = new TH1F("invEffave_d","",nBins,ptBins);
+  TH1F* invEffave_u = new TH1F("invEffave_u","",nBins,ptBins);
+
   for(int i=0;i<nBins;i++)
     {
       sum[i]=sum[i]/nevts[i];
       sumerr[i]=sqrt(sumerr[i])/nevts[i];
       invEffave->SetBinContent(i+1,sum[i]);
       invEffave->SetBinError(i+1,sumerr[i]);
-      std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff): "<<sum[i]<<" pm "<<sumerr[i]<<std::endl;      
+
+      if(useTNP)
+	{
+	  sum_d[i]=sum_d[i]/nevts[i];
+	  sumerr_d[i]=sqrt(sumerr_d[i])/nevts[i];
+	  sum_u[i]=sum_u[i]/nevts[i];
+	  sumerr_u[i]=sqrt(sumerr_u[i])/nevts[i];
+
+	  invEffave_d->SetBinContent(i+1,sum_u[i]);
+	  invEffave_d->SetBinError(i+1,sumerr_u[i]);
+	  invEffave_u->SetBinContent(i+1,sum_d[i]);
+	  invEffave_u->SetBinError(i+1,sumerr_d[i]);
+	}
+
+      std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Cent): "<<sum[i]<<" pm "<<sumerr[i]<<std::endl;
+      if(useTNP)
+	{
+	  std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Low): "<<sum_u[i]<<" pm "<<sumerr_u[i]<<", TNP syst (Low): "<<((sum[i]-sum_u[i])/sum[i])*100<<"%"<<std::endl;
+	  std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (High): "<<sum_d[i]<<" pm "<<sumerr_d[i]<<", TNP syst (High): "<<((sum_d[i]-sum[i])/sum[i])*100<<"%"<<std::endl;
+	}
     }
 
   TFile* outf = new TFile(outputeffname.Data(),"recreate");
   outf->cd();
   invEffave->Write();
+  if(useTNP)
+    {
+      invEffave_d->Write();
+      invEffave_u->Write();
+    }
   outf->Close(); 
 }
 
