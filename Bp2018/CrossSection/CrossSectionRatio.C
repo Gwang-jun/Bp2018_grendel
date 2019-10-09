@@ -123,9 +123,9 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
         if(!isPbPb) tpadr = 1;
 
 	//TFile* file = new TFile(input.Data());
-	TFile* file = new TFile("unbinnedfiles/yields_Bp_Bsbin_pt_Cent0-90.root");
+	TFile* file = new TFile("unbinnedfiles/yields_Bp_Fid_Bsbin_pt_Cent0-90.root");
 	TFile* fileeff = new TFile(efficiency.Data());
-	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_2D_Bsbin_Cent0-90.root");
+	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_Fid2D_Bsbin_Cent0-90.root");
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
 	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
 	TH1F* hinvEff = (TH1F*)fileinveff->Get("invEffave");
@@ -140,18 +140,6 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	hPtSigma->Scale(1./(2*taa*BRchain));
 	hPtSigma->SetName("hPtSigma");
 	
-	/*
-	TH1D* hPtSigma = new TH1D("hPtSigma","",nBins,ptBins);
-	hPtSigma->SetBinContent(1,14619722.568099);
-	hPtSigma->SetBinError(1,1679423.672859);
-	hPtSigma->SetBinContent(2,2837699.722421);
-	hPtSigma->SetBinError(2,176846.763128);
-	hPtSigma->SetBinContent(3,704946.913442);
-	hPtSigma->SetBinError(3,48853.139006);
-	hPtSigma->SetBinContent(4,86755.486203);
-	hPtSigma->SetBinError(4,5064.702126);
-	*/
-
 	for(int k=0;k<nBins;k++){
 	  printf("p_t bin %.0f-%.0f Corrected Yield: %f Err: %f\n", ptBins[k], ptBins[k+1], hPtSigma->GetBinContent(k+1), hPtSigma->GetBinError(k+1));}
 
@@ -176,7 +164,8 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 		    if(xr[i]<7) {systematic=0.01*9.74;}
 		    systematic=0.01*systematicsPP(xr[i],0.);
 		  }
-		//else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
+
+		else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
 

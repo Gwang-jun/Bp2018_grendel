@@ -65,9 +65,9 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	//TFile* fileeff = new TFile(efficiency.Data());
 
 
-        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_pt650_Cent0-90.root");
-        TFile* fileeff1 = new TFile("ROOTfiles/obsolete/MCstudiesPbPb2D_newpt_Cent0-30.root");
-	TFile* fileinveff1 = new TFile("ROOTfiles/MCstudiesPbPbAverage_2D_pt650_Cent0-90.root");
+        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_Fid_pt650_Cent0-90.root");
+        TFile* fileeff1 = new TFile("ROOTfiles/obsolete/MCstudiesPbPb2D_newpt_Cent0-90.root");
+	TFile* fileinveff1 = new TFile("ROOTfiles/MCstudiesPbPbAverage_Fid2D_pt650_Cent0-90.root");
         TH1F* hPtSigmadiff1 = (TH1F*)file1->Get("hPt");
         TH1F* hEff1 = (TH1F*)fileeff1->Get("hEff");
 	TH1F* hinvEff1 = (TH1F*)fileinveff1->Get("invEffave");
@@ -90,7 +90,9 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
         double coryieldErr2 = 0.0;
 	*/
 
-	hPtSigmadiff1->Scale(1./(2*6.274*BRchain));//6.274 15.41 1.705
+	hPtSigmadiff1->Scale(44.);
+	//hPtSigmadiff1->Scale(1./(2*TAA[0]*BRchain));//6.274 15.41 1.705
+	//hPtSigmadiff1->Scale(1./(2*BRchain));//6.274 15.41 1.705
 
         for(int k=0;k<nBins;k++) //must use differential pt bins that are used to calculate inclusive pt corrected yield
           {
@@ -140,8 +142,8 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	  ycrossstathibin[i] = hPtSigmahibin->GetBinError(i+1);
 	  double systematic=0.;
 	  
-	  //if (!isPbPb) systematic=0.01*systematicsPP(xr[i],0.);
-	  //else  systematic=0.01*systematicsPbPb(30.,0,_ptBins[i]/2.,_ptBins[i+1]/2.,0.);     
+	  if (!isPbPb) systematic=0.01*systematicsPP(xr[i],0.);
+	  else  systematic=0.01*systematicsPbPb(30.,0,_ptBins[i]/2.,_ptBins[i+1]/2.,0.);     
 	  
 	  //printf("bin: %d\n", i);
 	  //printf("xsec value: %f\n", ycross[i]);

@@ -10,17 +10,17 @@
 
 // Yen-Jie: systematics table for B meson
 // Unit: In percentage
-const int nPtBins=8;
+const int nPtBins=9;
 double PtBins[nPtBins+1] = {5.,7.,10.,15.,20.,30.,40.,50.,60.};//add a margin so that "FindBin" can work at the bin end
 
 const int nPtBins_Bs=4;
-double PtBins_Bs[nPtBins+1] = {5.,10.,15.,20.,50};
+double PtBins_Bs[nPtBins+1] = {6.,10.,15.,20.,50};
 
 const int AnaBins=8;
 double AnaPtBins[AnaBins+1] = {5.,7.,10.,15.,20.,30.,40.,50.,60.};
 
 const int nPtBinsCent=1;
-double PtBinsCent[nPtBinsCent+1] = {5.,50.};
+double PtBinsCent[nPtBinsCent+1] = {6.,50.};
 
 const int nCentBins=1;
 double CentBins[nCentBins+1] = {0.,90.};
@@ -41,7 +41,7 @@ double ppLumiUncertainty 	= 2.3;			// paper
 double ppTrackingEfficiency 	= 4;   			// single track systematics from D* studies
 double PbPbTrackingEfficiency 	= 5;   			// from charged particle analysis, paper
 double ppAlignment = 2.8; //alignment systematic from pp 13 TeV analysis
-double PbPbAlignment =0.0; //alignment systematic from pp 13 TeV analysis
+double PbPbAlignment = 0.0; //alignment systematic from pp 13 TeV analysis
 double ppLifetime = 0.3; //from 13 TeV analysis
 double PbPbLifetime = 0.0; //from 13 TeV analysis
 
@@ -653,7 +653,7 @@ float normalizationUncertaintyForPbPb(bool TAAhi = 1, double centL=0,double cent
 	return sqrt(sys);
 }
 
-float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0,double centH=100, double HLT=0)
+float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0, double centH=100, double HLT=0)
 {
   if(ptbinning&&centL==0&&centH==90) initialization(1,centL,centH);
   if(ptbinning&&centL==-1&&centH==-1) initialization(1,-1,-1);
@@ -663,17 +663,21 @@ float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0,double centH
       if (!initialized && centL==0&&centH==30) initialization(0,centL,centH);
       if (!initialized && centL==30&&centH==90) initialization(0,centL,centH);
     }
+
   double sys=0;
   
   sys+= PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt))* 
     PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt));
-  
+
   sys+= PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt))* 
     PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt));
+
+  std::cout<<"passed"<<std::endl;
   
-  sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
-    PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
-  
+  //sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
+  //PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
+ 
+
   sys+=PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt))*
     PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt));
   

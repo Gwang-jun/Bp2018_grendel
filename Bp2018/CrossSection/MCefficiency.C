@@ -15,6 +15,8 @@ Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
+bool useFiducial = 1;
+
 int _nBins = nBins;
 double *_ptBins = ptBins;
 
@@ -40,9 +42,12 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   centMin = centmin;
   centMax = centmax;
 
-  //cut_recoonly=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut_recoonly.Data());
-  //cut=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut.Data());
-  
+  if(useFiducial)
+    {
+      cut_recoonly=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut_recoonly.Data());
+      cut=Form("%s&&((Bgenpt>5&&Bgenpt<10&&TMath::Abs(By)>1.5)||(Bgenpt>10))",cut.Data());
+    }
+
   if(isPbPb==1)
     {
 
@@ -118,10 +123,10 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
     //weightBgenpt = "(2.907795+-0.436572*Bgenpt+0.006372*Bgenpt*Bgenpt)*TMath::Exp(-0.157563*Bgenpt)+1.01308";    
     //weightGpt = "(3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897";
     //weightBgenpt = "(3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897";
-    //weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
-    //weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
-    weightGpt = "1";
-    weightBgenpt = "1";
+    weightGpt = "(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
+    weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+    //weightGpt = "1";
+    //weightBgenpt = "1";
     //weightBgenpt = "(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)*(1.19015513+-0.04226922*Bgenpt+0.00289021*Bgenpt*Bgenpt+-0.00007469*Bgenpt*Bgenpt*Bgenpt+0.00000064*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
     //weightGpt = "(3.76547732-0.48262502*Gpt+0.02740408*Gpt*Gpt-0.00060885*Gpt*Gpt*Gpt+0.00000478*Gpt*Gpt*Gpt*Gpt)";
     //weightBgenpt = "(3.76547732-0.48262502*Bgenpt+0.02740408*Bgenpt*Bgenpt-0.00060885*Bgenpt*Bgenpt*Bgenpt+0.00000478*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
@@ -218,8 +223,6 @@ void MCefficiency(int isPbPb=0,TString inputmc="", TString selmcgen="",TString s
   hEff->Multiply(hEff,hEffAcc,1,1);
   TH1D* invEff = new TH1D("invEff","",BptBin,BptBinning);
   for(int i=0;i<BptBin;i++)
-    //TH1D* invEff = new TH1D("invEff","",40,hiBinMin,hiBinMax);
-    //for(int i=0;i<40;i++)
     {
       invEff->SetBinContent(i+1,1.0/hEff->GetBinContent(i+1));
       invEff->SetBinError(i+1,hEff->GetBinError(i+1)/hEff->GetBinContent(i+1)/hEff->GetBinContent(i+1));
