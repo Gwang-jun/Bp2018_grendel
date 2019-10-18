@@ -12,6 +12,8 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	gStyle->SetEndErrorSize(0);
 	gStyle->SetMarkerStyle(20);
 
+	TString texper="%";
+
 	/*
 	TFile* filenominal1 = new TFile("ptshape/BDT/CrossSectionPbPb_nominal_Cent0-90.root");
 	TFile* filenoweight1 = new TFile("ptshape/BDT/CrossSectionPbPb_noweight_Cent0-90.root");
@@ -123,25 +125,22 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
         if(!isPbPb) tpadr = 1;
 
 	//TFile* file = new TFile(input.Data());
-	TFile* file = new TFile("unbinnedfiles/yields_Bp_Fid_Bsbin_pt_Cent0-90.root");
+	TFile* file = new TFile("unbinnedfiles/yields_Bp_Fid_Bsbin_Cent0-90.root");
 	TFile* fileeff = new TFile(efficiency.Data());
-	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_Fid2D_Bsbin_Cent0-90.root");
+	TFile* fileinveff = new TFile("ROOTfiles/MCstudiesPbPbAverage_noTNP_Fid2D_Bsbin_Cent0-90.root");
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
 	TH1F* hEff = (TH1F*)fileeff->Get("hEff");
 	TH1F* hinvEff = (TH1F*)fileinveff->Get("invEffave");
 	//if(doDataCor != 1) hPtSigma->Divide(hEff);
 	hPtSigma->Multiply(hinvEff);
 	//hPtSigma->Scale(1./(2*lumi*BRchain));
-
-	float taa = 6.274;//0-90
-	//float taa = 15.41;//0-30
-	//float taa = 1.705;//30-90
-
-	hPtSigma->Scale(1./(2*taa*BRchain));
+	
+	hPtSigma->Scale(1./(2*TAA[0]*BRchain));
+	//hPtSigma->Scale(1./(2*11.1*TAA[0]*BRchain));//N_MB = 11.1e+09
 	hPtSigma->SetName("hPtSigma");
 	
 	for(int k=0;k<nBins;k++){
-	  printf("p_t bin %.0f-%.0f Corrected Yield: %f Err: %f\n", ptBins[k], ptBins[k+1], hPtSigma->GetBinContent(k+1), hPtSigma->GetBinError(k+1));}
+	  printf("p_t bin %.0f-%.0f Corrected Yield: %f Err: %f (%.2f%s)\n", ptBins[k], ptBins[k+1], hPtSigma->GetBinContent(k+1), hPtSigma->GetBinError(k+1), 100*hPtSigma->GetBinError(k+1)/hPtSigma->GetBinContent(k+1), texper.Data());}
 
 	
 	Double_t xr[nBins], xrlow[nBins], xrhigh[nBins], ycross[nBins],ycrossstat[nBins],ycrosssysthigh[nBins],ycrosssystlow[nBins], yFONLL[nBins];
@@ -165,7 +164,24 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 		    systematic=0.01*systematicsPP(xr[i],0.);
 		  }
 
-		else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
+		/*
+		if(i==0) systematic=0.01*35.77;
+		if(i==1) systematic=0.01*20.15;
+		if(i==2) systematic=0.01*18.15;
+		if(i==3) systematic=0.01*9.25;
+		if(i==4) systematic=0.01*8.58;
+		if(i==5) systematic=0.01*8.30;
+		if(i==6) systematic=0.01*12.09;
+		if(i==7) systematic=0.01*12.53;
+		*/
+		
+		if(i==0) systematic=0.01*20.15;
+		if(i==1) systematic=0.01*18.15;
+		if(i==2) systematic=0.01*9.25;
+		if(i==3) systematic=0.01*8.42;
+		
+
+		//else  systematic=0.01*systematicsPbPb(xr[i],1,centMin,centMax,0.);
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,0,90,0.);
 		//else  systematic=0.01*systematicsPbPb(xr[i],1,-1,-1,0.);//Bs bin
 
@@ -236,7 +252,7 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	}
 
 	//Float_t yaxisMin=1.1,yaxisMax=1.e+9;//PAS
-	Float_t yaxisMin=1.e+2,yaxisMax=1.e+8;//paper 20170224
+	Float_t yaxisMin=1.e+2,yaxisMax=1.e+7;//paper 20170224
 	if(isPbPb){
 		yaxisMin=1.e+2;
 	}
@@ -246,7 +262,7 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	//hemptySigma->GetYaxis()->SetTitle("#frac{d#sigma}{dp_{T}} ( pb GeV^{-1}c)");
 	//if(isPbPb) hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} ( pb GeV^{-1}c)");
 	//hemptySigma->GetYaxis()->SetTitle("Corrected p_{T} differential yield (GeV^{-1}c)");
-	hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (mb*GeV^{-1}c)");
+	hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (pb*GeV^{-1}c)");
 	hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
 	hemptySigma->GetXaxis()->SetTitleOffset(1.);
 	hemptySigma->GetYaxis()->SetTitleOffset(1./tpadr);
@@ -314,14 +330,13 @@ void CrossSectionRatio(TString inputFONLL="", TString input="", TString efficien
 	texCol->SetTextFont(42);
 	//texCol->Draw();
 
-	TString texper="%";
 	TLatex* texCent = new TLatex(0.53,0.600,Form("Cent. %.0f-%.0f%s",centMin,centMax,texper.Data()));
 	texCent->SetNDC();
 	texCent->SetTextFont(42);
 	texCent->SetTextSize(0.04);
 	if(isPbPb) texCent->Draw();
 
-	TLatex* texY = new TLatex(0.53,1-(1-0.65)*tpadr,"|y| < 2.4");
+	TLatex* texY = new TLatex(0.53,1-(1-0.65)*tpadr,"|y|<2.4 (p_{T}<10GeV/c: |y|>1.5)");
 	texY->SetNDC();
 	texY->SetTextFont(42);
 	texY->SetTextSize(0.05*tpadr);

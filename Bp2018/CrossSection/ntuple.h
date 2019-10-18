@@ -20,12 +20,14 @@ double BDT_7_10[MAX_XB];
 double BDT_10_15[MAX_XB];
 double BDT_15_20[MAX_XB];
 double BDT_20_30[MAX_XB];
-double BDT_30_50[MAX_XB];
-double BDT_50_100[MAX_XB];
+double BDT_30_40[MAX_XB];
+double BDT_40_50[MAX_XB];
+double BDT_50_60[MAX_XB];
 
 int    Bsize;
 float  Bgen[MAX_XB];
 float  Bpt[MAX_XB];
+float  Gpt[MAX_XB];
 float  Bgenpt[MAX_XB];
 float  Balpha[MAX_XB];
 float  Blxy[MAX_XB];
@@ -105,12 +107,14 @@ void setbranchaddress(TFile* ffile,TTree* fnt)
   fnt->SetBranchAddress("BDT_10_15", BDT_10_15);
   fnt->SetBranchAddress("BDT_15_20", BDT_15_20);
   fnt->SetBranchAddress("BDT_20_30", BDT_20_30);
-  fnt->SetBranchAddress("BDT_30_50", BDT_30_50);
-  fnt->SetBranchAddress("BDT_50_100", BDT_50_100);
+  fnt->SetBranchAddress("BDT_30_40", BDT_30_40);
+  fnt->SetBranchAddress("BDT_40_50", BDT_40_50);
+  fnt->SetBranchAddress("BDT_50_60", BDT_50_60);
   fnt->SetBranchAddress("hiBin", &hiBin);
   fnt->SetBranchAddress("Bsize", &Bsize);
   fnt->SetBranchAddress("Bgen", Bgen);
   fnt->SetBranchAddress("Bpt", Bpt);
+  fnt->SetBranchAddress("Gpt", Gpt);
   fnt->SetBranchAddress("Bgenpt", Bgenpt);
   fnt->SetBranchAddress("Balpha", Balpha);
   //fnt->SetBranchAddress("Blxy", Blxy);
@@ -179,11 +183,11 @@ void setbranchaddress(TFile* ffile,TTree* fnt)
 int findBptbin(float Bpt)
 {
   int n;
-  for(int i=0;i<nBinsFine;i++)
+  for(int i=0;i<nBins;i++)
     {
-      if(Bpt>=5+45.0/nBinsFine*i && Bpt<5+45.0/nBinsFine*(i+1))
+      if(Bpt>=ptBins[i] && Bpt<ptBins[i+1])
 	{
-	  n=i;
+	  n=i+1;
 	  break;
 	}
     }

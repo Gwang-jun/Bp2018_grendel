@@ -3,6 +3,10 @@
 #include "TF1.h"
 #include <TFitResultPtr.h>
 
+int plot2D=0;
+int plotClosure=1;
+TString closureplotname = "plotClosure/Closure_Bplusbin";
+
 Double_t setparam0=100.;
 Double_t setparam1=5.28;
 Double_t setparam2=0.05;
@@ -25,8 +29,6 @@ TString selmcgen;
 TString collisionsystem;
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 double _ErrCor=1;
-
-int plot2D=1;
 
 int _nBins = nBins;
 double *_ptBins = ptBins;
@@ -72,7 +74,18 @@ void fitB(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgs
       gStyle->SetPalette(55,0);
       gStyle->SetOptStat(0);
     }
-  if(plot2D==0)
+  if(plotClosure==1)
+    {
+      gStyle->SetOptStat(0);
+      gStyle->SetTextSize(0.05);
+      gStyle->SetTextFont(42);
+      gStyle->SetPadRightMargin(0.043);
+      gStyle->SetPadLeftMargin(0.18);
+      gStyle->SetPadTopMargin(0.1);
+      gStyle->SetPadBottomMargin(0.145);
+      gStyle->SetTitleX(.0f);
+    }
+  if(plot2D==0 && plotClosure==0)
     {
       gStyle->SetTextSize(0.05);
       gStyle->SetTextFont(42);
@@ -108,7 +121,9 @@ weightdataBgenpt="1";
      //weightgen="pthatweight*((3.506006+0.963473*Gpt+-0.258731*Gpt*Gpt)*TMath::Exp(-0.386065*Gpt)+1.139897)";
      //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*((3.506006+0.963473*Bgenpt+-0.258731*Bgenpt*Bgenpt)*TMath::Exp(-0.386065*Bgenpt)+1.139897)";
      weightgen="pthatweight*(3.00448277-0.35865276*Gpt+0.01997413*Gpt*Gpt-0.00042585*Gpt*Gpt*Gpt+0.00000315*Gpt*Gpt*Gpt*Gpt)";
-     weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))*(3.00448277-0.35865276*Bgenpt+0.01997413*Bgenpt*Bgenpt-0.00042585*Bgenpt*Bgenpt*Bgenpt+0.00000315*Bgenpt*Bgenpt*Bgenpt*Bgenpt)";
+     //weight="pthatweight*Ncoll*(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
+     weight="1";
    }
 
 std::cout<<"we are using weight="<<weight<<std::endl;
@@ -237,6 +252,7 @@ TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
  divideBinWidth(hPtGen);
 
  TCanvas* cPt =  new TCanvas("cPt","",600,600);
+ cPt->cd();
  cPt->SetLogy();
  hPt->SetXTitle("B^{+} p_{T} (GeV/c)");
  hPt->SetYTitle("Uncorrected dN(B^{+})/dp_{T}");
@@ -264,6 +280,7 @@ TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
  hPtCor->SetTitle(";B^{+} p_{T} (GeV/c);Corrected dN(B^{+})/dp_{T}");
  hPtCor->Divide(hEff);
  TCanvas* cPtCor=  new TCanvas("cCorResult","",600,600);
+ cPtCor->cd();
  cPtCor->SetLogy();
  hPtCor->Draw();
  if(isMC==1)
@@ -283,9 +300,40 @@ TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
  hPtSigma->SetTitle(";B^{+} p_{T} (GeV/c);d#sigma(B^{+})/dp_{T} (pb/GeV)");
  hPtSigma->Scale(1./(2*luminosity*BRchain));
  
- TCanvas* cPtSigma=  new TCanvas("cPtSigma","",600,600);
+ TCanvas* cPtSigma= new TCanvas("cPtSigma","",600,600);
+ cPtSigma->cd();
  cPtSigma->SetLogy();
  hPtSigma->Draw();
+
+ TCanvas* cClosure = new TCanvas("cClosure","",600,600);
+ cClosure->cd();
+ TH1D* hClosure = (TH1D*)hPt->Clone("hClosure");
+ hClosure->Divide(hPtMC);
+ TH2F* hemptyClosure=new TH2F("hemptyClosure","",50,ptBins[0]-5,ptBins[nBins]+5,8,0.8,1.2);
+ hemptyClosure->GetXaxis()->CenterTitle();
+ hemptyClosure->GetYaxis()->CenterTitle();
+ hemptyClosure->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+ hemptyClosure->GetYaxis()->SetTitle("MC corrected yield/Gen yield");
+ hemptyClosure->GetXaxis()->SetTitleOffset(0.9);
+ hemptyClosure->GetYaxis()->SetTitleOffset(1.3);
+ hemptyClosure->GetXaxis()->SetTitleSize(0.04);
+ hemptyClosure->GetYaxis()->SetTitleSize(0.04);
+ hemptyClosure->GetXaxis()->SetTitleFont(42);
+ hemptyClosure->GetYaxis()->SetTitleFont(42);
+ hemptyClosure->GetXaxis()->SetLabelFont(42);
+ hemptyClosure->GetYaxis()->SetLabelFont(42);
+ hemptyClosure->GetXaxis()->SetLabelSize(0.035);
+ hemptyClosure->GetYaxis()->SetLabelSize(0.035);
+ hemptyClosure->Draw();
+ hClosure->Draw("same");
+
+ cClosure->SaveAs(Form("%s_Cent%.0f-%.0f.png",closureplotname.Data(),centmin,centmax));
+ cClosure->SaveAs(Form("%s_Cent%.0f-%.0f.pdf",closureplotname.Data(),centmin,centmax));
+
+ for(int i=0;i<nBins;i++)
+ {
+   std::cout<<i<<"-th bin Closure deviation: "<<100*(hClosure->GetBinContent(i+1)-1.0)<<"%"<<std::endl;
+ }
 
  hPt->Write();
  hEff->Write();
@@ -294,6 +342,7 @@ TH1D* hPtGen = new TH1D("hPtGen","",_nBins,_ptBins);
  hPtMC->Write();
  hPtCor->Write();
  hPtSigma->Write();
+ hClosure->Write();
  outf->Close();
  
 }
@@ -348,20 +397,22 @@ void getNPFnPar(TString npfname, float par[]){
   f->SetNpx(5000);
   f->SetLineWidth(5);
   
-  //if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(1/%s)",weight.Data(),seldata.Data(),ptmin,ptmax,weightdata.Data())); //Closure
-  if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptmin,ptmax));
+  if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("%s*(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(%s)",weight.Data(),seldata.Data(),ptmin,ptmax,weightdata.Data())); //Closure
+  //if(isMC==1) ntMC->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)",seldata.Data(),ptmin,ptmax));
   else nt->Project(Form("h-%d",count),"Bmass",Form("(%s&&Bpt>%f&&Bpt<%f)*(%s)",seldata.Data(),ptmin,ptmax,weightdata.Data()));   
   ntMC->Project(Form("hMCSignal-%d",count),"Bmass",Form("(%s&&Bgen==23333&&Bpt>%f&&Bpt<%f)*(%s)",selmc.Data(),ptmin,ptmax,weightdataBgenpt.Data()));
 
   clean0(h);
-  
-  f->SetParLimits(4,-1e5,1e5);
+
+  f->SetParLimits(0,0,1e4);//1e7
+  f->SetParLimits(7,0,1);
+  f->SetParLimits(1,5.25,5.30);  
   f->SetParLimits(2,0.01,0.05);
   f->SetParLimits(8,0.01,0.05);
-  f->SetParLimits(7,0,1);
-  f->SetParLimits(5,0,1e4);
-  f->SetParLimits(0,0,1e7);//1e7
-  f->SetParLimits(1,5.25,5.30);
+  //f->SetParLimits(4,-1e5,1e5);
+  f->SetParLimits(4,-5,5);
+  //f->SetParLimits(5,0,1e4);
+  f->SetParLimits(5,0,1);
   
   //Do the signal fit first
   

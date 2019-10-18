@@ -13,20 +13,24 @@ TString selmcgen;
 TString collisionsystem;
 Float_t hiBinMin,hiBinMax,centMin,centMax;
 
+bool uselogy = 0;
+
 bool useTNP = 1;
-//bool useFiducial = 0;
+bool useFiducial = 1;
+bool compareBpt = 0;
+bool compareSplot = 0;
 
 void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TString trgselection="1",  TString cut="", TString cutmcgen="", int isMC=0, Double_t luminosity=1., int doweight=0, TString collsyst="PbPb", TString outputfile="", TString npfit="0", int doDataCor = 0, Float_t centmin=0., Float_t centmax=90.)
 {
-  //TString inputeffname1 = Form("ROOTfiles/MCstudiesPbPb_Fid2D_Cent%.0f-%.0f.root",centmin,centmax);
-  //TString inputTNPname1 = Form("ROOTfiles/TNP2D_Bplus_Cent%.0f-%.0f.root",centmin,centmax);
-  TString outputeffname = Form("ROOTfiles/MCstudiesPbPbAverage_Fid2D_pt1050_Cent%.0f-%.0f.root",centmin,centmax);
+  TString plotname = Form("plotAverageEff/Ave/invEff_Fid2D_pt750_Cent%.0f-%.0f",centmin,centmax);
+  TString outputeffname = Form("ROOTfiles/MCstudiesPbPbAverage_Fid2D_pt750_Cent%.0f-%.0f.root",centmin,centmax);
+  TString nominaleffname = Form("ROOTfiles/MCstudiesPbPbAverage_Fid2D_pt750_Cent%.0f-%.0f.root",centmin,centmax);
 
   TString inputeffname1 = "ROOTfiles/MCstudiesPbPb_Fid2D_Cent0-30.root";
-  TString inputTNPname1 = "ROOTfiles/TNP2D_Bplus_Cent0-30.root";
   TString inputeffname2 = "ROOTfiles/MCstudiesPbPb_Fid2D_Cent30-90.root";
+
+  TString inputTNPname1 = "ROOTfiles/TNP2D_Bplus_Cent0-30.root";
   TString inputTNPname2 = "ROOTfiles/TNP2D_Bplus_Cent30-90.root";
-  //TString outputeffname = "test.root";
 
   hiBinMin = centmin*2;
   hiBinMax = centmax*2;
@@ -35,6 +39,8 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
 
   if (!(usePbPb==1||usePbPb==0)) std::cout<<"ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, you are using a non valid isPbPb option"<<std::endl;
   bool isPbPb=(bool)(usePbPb);
+
+  gStyle->SetOptStat(0);
 
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
@@ -115,7 +121,7 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
       nt->GetEntry(i);
       if(!(TMath::Abs(Bmass-5.27932)<0.08)) continue;
       if(!(HiBin>=centMin && HiBin<centMax)) continue;
-      //if(useFiducial) {if(!((Bpt>5 && Bpt<10 && TMath::Abs(By)>1.5) || (Bpt>10))) continue;}// check if already implemented
+      if(useFiducial) {if(!((Bpt>5 && Bpt<10 && TMath::Abs(By)>1.5) || (Bpt>10))) continue;}// check if already implemented
 
       for(int k=0;k<nBins;k++)
 	{
@@ -229,9 +235,18 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
   TH1F* invEffave_d = new TH1F("invEffave_d","",nBins,ptBins);
   TH1F* invEffave_u = new TH1F("invEffave_u","",nBins,ptBins);
 
+  invEffave->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  invEffave->GetYaxis()->SetTitle("<1/(#alpha x #epsilon)>");
+  invEffave->GetXaxis()->CenterTitle();
+  invEffave->GetYaxis()->CenterTitle();
+  invEffave->SetTitleOffset(1.4);
+
+  invEffave->SetMaximum(40);
+  invEffave->SetMaximum(20);
+
   for(int i=0;i<nBins;i++)
     {
-      std::cout<<"sum: "<<sum[i]<<" nevts: "<<nevts[i]<<std::endl;
+      //std::cout<<"sum: "<<sum[i]<<" nevts: "<<nevts[i]<<std::endl;
 
       sum[i]=sum[i]/nevts[i];
       sumerr[i]=sqrt(sumerr[i])/nevts[i];
@@ -250,13 +265,88 @@ void AverageEff(int usePbPb=0, TString inputdata="" , TString inputmc="", TStrin
 	  invEffave_u->SetBinContent(i+1,sum_d[i]);
 	  invEffave_u->SetBinError(i+1,sumerr_d[i]);
 	}
+      
+      std::cout<<"pt "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Cent "<<centMin<<"-"<<centMax<<"%"<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Cent): "<<sum[i]<<" pm "<<sumerr[i]<<std::endl;
 
-      std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Cent): "<<sum[i]<<" pm "<<sumerr[i]<<std::endl;
       if(useTNP)
 	{
-	  std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Low): "<<sum_u[i]<<" pm "<<sumerr_u[i]<<", TNP syst (Low): "<<((sum[i]-sum_u[i])/sum[i])*100<<"%"<<std::endl;
-	  std::cout<<"ptbin "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (High): "<<sum_d[i]<<" pm "<<sumerr_d[i]<<", TNP syst (High): "<<((sum_d[i]-sum[i])/sum[i])*100<<"%"<<std::endl;
+	  std::cout<<"pt "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Cent "<<centMin<<"-"<<centMax<<"%"<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (Low): "<<sum_u[i]<<" pm "<<sumerr_u[i]<<", TNP syst (Low): "<<((sum[i]-sum_u[i])/sum[i])*100<<"%"<<std::endl;
+	  std::cout<<"pt "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Cent "<<centMin<<"-"<<centMax<<"%"<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (High): "<<sum_d[i]<<" pm "<<sumerr_d[i]<<", TNP syst (High): "<<((sum_d[i]-sum[i])/sum[i])*100<<"%"<<std::endl;
 	}
+    }
+
+  TCanvas* cinvEff = new TCanvas("","",600,600);
+  cinvEff->cd();
+  if(uselogy) cinvEff->SetLogy();
+  invEffave->Draw();
+  cinvEff->SaveAs(Form("%s.png",plotname.Data()));
+  cinvEff->SaveAs(Form("%s.pdf",plotname.Data()));
+
+  if(compareBpt || compareSplot)
+    {
+      TFile* nominalfile = new TFile(nominaleffname.Data());
+      TH1F* invEffnominal = (TH1F*)nominalfile->Get("invEffave");
+      
+      invEffnominal->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+      invEffnominal->GetYaxis()->SetTitle("<1/(#alpha x #epsilon)>");
+      invEffnominal->GetXaxis()->CenterTitle();
+      invEffnominal->GetYaxis()->CenterTitle();
+      invEffnominal->SetTitleOffset(1.4);
+      
+      invEffnominal->SetMaximum(30);
+      invEffnominal->SetMinimum(20);
+      
+      TCanvas* cinvcompare = new TCanvas("","",600,600);
+      cinvcompare->cd();
+      if(uselogy) cinvcompare->SetLogy();
+      
+      TLegend *leg = new TLegend(0.70,0.70,0.90,0.80,NULL,"brNDC");
+      leg->SetBorderSize(0);
+      leg->SetTextSize(0.04);
+      leg->SetTextFont(42);
+      leg->SetFillStyle(0);
+      
+      if(compareBpt)
+	{
+	  std::cout<<""<<std::endl;
+	  for(int i=0;i<nBins;i++)
+	    {
+	      std::cout<<"pt "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Cent "<<centMin<<"-"<<centMax<<"%"<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (nominal): "<<invEffnominal->GetBinContent(i+1)<<", Bptweight systematics: "<<100*(sum[i]-invEffnominal->GetBinContent(i+1))/invEffnominal->GetBinContent(i+1)<<"%"<<std::endl;
+	    }
+	  
+	  invEffnominal->SetLineColor(kBlack);
+	  invEffave->SetLineColor(kRed);
+	  invEffnominal->Draw();
+	  invEffave->Draw("same");
+	  
+	  leg->AddEntry(invEffnominal,"nominal","l");
+	  leg->AddEntry(invEffave,"Bptweight","l");
+	  leg->Draw("same");
+	  
+	  cinvcompare->SaveAs(Form("%s_Bptweight.png",plotname.Data()));
+	  cinvcompare->SaveAs(Form("%s_Bptweight.pdf",plotname.Data()));
+	}     
+      
+      if(compareSplot)
+	{
+	  std::cout<<""<<std::endl;
+	  for(int i=0;i<nBins;i++)
+	    {
+	      std::cout<<"pt "<<ptBins[i]<<"-"<<ptBins[i+1]<<" Cent "<<centMin<<"-"<<centMax<<"%"<<" Nevts: "<<nevts[i]<<", Average 1/(acc*eff) (nominal): "<<invEffnominal->GetBinContent(i+1)<<", Splotweight systematics: "<<100*(sum[i]-invEffnominal->GetBinContent(i+1))/invEffnominal->GetBinContent(i+1)<<"%"<<std::endl;
+	    } 
+	  
+	  invEffnominal->SetLineColor(kBlack);
+	  invEffave->SetLineColor(kRed);
+	  invEffnominal->Draw();
+	  invEffave->Draw("same");
+	  
+	  leg->AddEntry(invEffnominal,"nominal","l");
+	  leg->AddEntry(invEffave,"Splotweight","l");
+	  leg->Draw("same");
+	  
+	  cinvcompare->SaveAs(Form("%s_Splotweight.png",plotname.Data()));
+	  cinvcompare->SaveAs(Form("%s_Splotweight.pdf",plotname.Data()));
+	}     
     }
 
   TFile* outf = new TFile(outputeffname.Data(),"recreate");

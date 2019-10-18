@@ -1,11 +1,10 @@
 const int nBins=1;
-double ptBins[nBins+1] = {10., 50.};
-//double ptBins[nBins+1] = {6., 10., 15., 20., 50.};
-//double ptBins[nBins+1] = {5., 10., 15., 20., 30., 40., 50.};
+double ptBins[nBins+1] = {7., 50.};
+//double ptBins[nBins+1] = {7., 10., 15., 20., 50.};
 //double ptBins[nBins+1] = {5., 7., 10., 15., 20., 30., 40., 50., 60.};
 
 const int nBinsInc=1;
-double ptBinsInc[nBinsInc+1] = {6., 50.};
+double ptBinsInc[nBinsInc+1] = {10., 50.};
 const int nBinsFine=45;
 double ptBinsFine[nBinsFine+1] = {5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25., 26., 27., 28., 29., 30., 31., 32., 33., 34., 35., 36., 37., 38., 39., 40., 41., 42., 43., 44., 45., 46., 47., 48., 49., 50.};
 
@@ -24,15 +23,15 @@ double npart[nBinsCent] = {126.0};
 /*
 const int nBinsCent=1;
 double ptBinsCent[nBinsCent+1] = {0.*2, 30.*2};
-double TAA[nBinsCent] = {15.41};
+double TAA[nBinsCent] = {15.42};
 double npart[nBinsCent] = {269.1};
 */
 
 /*
 const int nBinsCent=1;
 double ptBinsCent[nBinsCent+1] = {30.*2, 90.*2};
-double TAA[nBinsCent] = {1.705};
-double npart[nBinsCent] = {54.44};
+double TAA[nBinsCent] = {1.704};
+double npart[nBinsCent] = {54.45};
 */
 
 /*

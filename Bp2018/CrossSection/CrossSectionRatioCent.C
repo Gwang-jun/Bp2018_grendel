@@ -22,6 +22,8 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	gStyle->SetEndErrorSize(0);
 	gStyle->SetMarkerStyle(20);
 
+        TString texper="%";
+
 	std::cout<<"step1"<<std::endl;
 
 	TFile* fileReference = new TFile(inputFONLL.Data());  
@@ -65,9 +67,9 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	//TFile* fileeff = new TFile(efficiency.Data());
 
 
-        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_Fid_pt650_Cent0-90.root");
+        TFile* file1 = new TFile("unbinnedfiles/yields_Bp_Fid_pt950_Cent30-90.root");
         TFile* fileeff1 = new TFile("ROOTfiles/obsolete/MCstudiesPbPb2D_newpt_Cent0-90.root");
-	TFile* fileinveff1 = new TFile("ROOTfiles/MCstudiesPbPbAverage_Fid2D_pt650_Cent0-90.root");
+	TFile* fileinveff1 = new TFile("ROOTfiles/MCstudiesPbPbAverage_noTNP_Fid2D_pt950_Cent30-90.root");
         TH1F* hPtSigmadiff1 = (TH1F*)file1->Get("hPt");
         TH1F* hEff1 = (TH1F*)fileeff1->Get("hEff");
 	TH1F* hinvEff1 = (TH1F*)fileinveff1->Get("invEffave");
@@ -90,16 +92,15 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
         double coryieldErr2 = 0.0;
 	*/
 
-	hPtSigmadiff1->Scale(44.);
-	//hPtSigmadiff1->Scale(1./(2*TAA[0]*BRchain));//6.274 15.41 1.705
-	//hPtSigmadiff1->Scale(1./(2*BRchain));//6.274 15.41 1.705
+	hPtSigmadiff1->Scale(1./(2*TAA[0]*BRchain));
+	//hPtSigmadiff1->Scale(1./(2*11.1*TAA[0]*BRchain));//N_MB = 11.1 Billion
 
         for(int k=0;k<nBins;k++) //must use differential pt bins that are used to calculate inclusive pt corrected yield
           {
-            ptwidth[k] = (ptBins[k+1]-ptBins[k])/(ptBins[nBins]-ptBins[0]);
-	    std::cout<<"ptbin "<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1)<<" pm "<<ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)<<std::endl;
-	    coryield1 += ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1);
-            coryieldErr1 += ptwidth[k]*ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)*hPtSigmadiff1->GetBinError(k+1);
+            //ptwidth[k] = (ptBins[k+1]-ptBins[k])/(ptBins[nBins]-ptBins[0]);
+	    //std::cout<<"ptbin "<<k<<" "<<ptwidth[k]*hPtSigmadiff1->GetBinContent(k+1)<<" pm "<<ptwidth[k]*hPtSigmadiff1->GetBinError(k+1)<<std::endl;
+	    coryield1 += hPtSigmadiff1->GetBinContent(k+1);
+            coryieldErr1 += hPtSigmadiff1->GetBinError(k+1)*hPtSigmadiff1->GetBinError(k+1);
             //coryield2 += ptwidth[k]*hPtSigmadiff2->GetBinContent(k+1);
             //coryieldErr2 += ptwidth[k]*ptwidth[k]*hPtSigmadiff2->GetBinError(k+1)*hPtSigmadiff2->GetBinError(k+1);
           }
@@ -123,7 +124,7 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
           }
 
         for(int k=0;k<nBinsCent;k++){
-	printf("Cent bin %.0f-%.0f Corrected Yield: %f Err: %f\n", ptBinsCent[k], ptBinsCent[k+1], hPtSigmahibin->GetBinContent(k+1), hPtSigmahibin->GetBinError(k+1));}
+	  printf("Cent bin %.0f-%.0f Corrected Yield: %f Err: %f (%.2f%s)\n", ptBinsCent[k], ptBinsCent[k+1], hPtSigmahibin->GetBinContent(k+1), hPtSigmahibin->GetBinError(k+1), 100*hPtSigmahibin->GetBinError(k+1)/hPtSigmahibin->GetBinContent(k+1), texper.Data());}
 
 	Double_t xr[_nBins], xrlow[_nBins], xrhigh[_nBins], ycross[_nBins],ycrossstat[_nBins],ycrosssysthigh[_nBins],ycrosssystlow[_nBins], yFONLL[_nBins];
 	Double_t yratiocrossFONLL[_nBins], yratiocrossFONLLstat[_nBins], yratiocrossFONLLsysthigh[_nBins], yratiocrossFONLLsystlow[_nBins];
@@ -243,7 +244,7 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 		pSigma->cd();
 	}
 
-	Float_t yaxisMin=1.e+5,yaxisMax=1.e+7;
+	Float_t yaxisMin=1.e+3,yaxisMax=1.e+6;
 	if(plotFONLL) yaxisMin=1.e+3;
 
 	//TH2F* hemptySigma=new TH2F("hemptySigma","",50,_ptBins[0]-5.,_ptBins[_nBins]+5.,10.,yaxisMin,yaxisMax);  
@@ -252,7 +253,7 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
 	hemptySigma->GetYaxis()->CenterTitle();
 	//hemptySigma->GetYaxis()->SetTitle("#frac{d#sigma_{pp}}{dp_{T}} ( pb GeV^{-1}c)");
 	//if(isPbPb) hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} ( pb GeV^{-1}c)");
-	hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (mb*GeV^{-1}c)");
+	hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (pb*GeV^{-1}c)");
 	hemptySigma->GetXaxis()->SetTitle("<N_{part}>");
         hemptySigma->GetXaxis()->SetTitleOffset(1.);
         hemptySigma->GetYaxis()->SetTitleOffset(1./tpadr);
@@ -320,14 +321,13 @@ void CrossSectionRatioCent(TString inputFONLL="", TString input="", TString effi
         texCol->SetTextFont(42);
         //texCol->Draw();
 
-        TString texper="%";
         TLatex* texCent = new TLatex(0.53,0.600,Form("Cent. %.0f-%.0f%s",centMin,centMax,texper.Data()));
         texCent->SetNDC();
         texCent->SetTextFont(42);
         texCent->SetTextSize(0.04);
         //if(isPbPb) texCent->Draw();
 
-        TLatex* texY = new TLatex(0.53,1-(1-0.65)*tpadr,"|y| < 2.4");
+        TLatex* texY = new TLatex(0.53,1-(1-0.65)*tpadr,"|y|<2.4 (p_{T}<10GeV: |y|>1.5)");
         texY->SetNDC();
         texY->SetTextFont(42);
         texY->SetTextSize(0.05*tpadr);

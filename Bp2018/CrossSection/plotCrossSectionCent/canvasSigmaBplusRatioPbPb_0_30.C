@@ -1,12 +1,12 @@
 void canvasSigmaBplusRatioPbPb_0_30()
 {
 //=========Macro generated from canvas: cSigma/
-//=========  (Tue Oct  8 13:45:33 2019) by ROOT version 6.16/00
+//=========  (Wed Oct 16 08:53:58 2019) by ROOT version 6.16/00
    TCanvas *cSigma = new TCanvas("cSigma", "",0,0,600,600);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
    cSigma->SetHighLightColor(2);
-   cSigma->Range(-60,4.788404,340,7.13947);
+   cSigma->Range(-60,2.682606,340,6.209205);
    cSigma->SetFillColor(0);
    cSigma->SetBorderMode(0);
    cSigma->SetBorderSize(2);
@@ -16,7 +16,7 @@ void canvasSigmaBplusRatioPbPb_0_30()
    cSigma->SetFrameBorderMode(0);
    cSigma->SetFrameBorderMode(0);
    
-   TH2F *hemptySigma__1 = new TH2F("hemptySigma__1","",50,0,300,10,100000,1e+07);
+   TH2F *hemptySigma__1 = new TH2F("hemptySigma__1","",50,0,300,10,1000,1000000);
    hemptySigma__1->SetMinimum(0);
    hemptySigma__1->SetMaximum(2);
    hemptySigma__1->SetStats(0);
@@ -34,7 +34,7 @@ void canvasSigmaBplusRatioPbPb_0_30()
    hemptySigma__1->GetXaxis()->SetTitleSize(0.036);
    hemptySigma__1->GetXaxis()->SetTitleOffset(1);
    hemptySigma__1->GetXaxis()->SetTitleFont(42);
-   hemptySigma__1->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (mb*GeV^{-1}c)");
+   hemptySigma__1->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} (pb*GeV^{-1}c)");
    hemptySigma__1->GetYaxis()->CenterTitle(true);
    hemptySigma__1->GetYaxis()->SetLabelFont(42);
    hemptySigma__1->GetYaxis()->SetLabelSize(0.042);
@@ -49,17 +49,17 @@ void canvasSigmaBplusRatioPbPb_0_30()
    hemptySigma__1->Draw("");
    
    Double_t hPtSigma_fx3001[1] = {
-   126};
+   269.1};
    Double_t hPtSigma_fy3001[1] = {
-   47072.39};
+   250835.5};
    Double_t hPtSigma_felx3001[1] = {
    2.5};
    Double_t hPtSigma_fely3001[1] = {
-   7667.986};
+   18068.56};
    Double_t hPtSigma_fehx3001[1] = {
    2.5};
    Double_t hPtSigma_fehy3001[1] = {
-   7667.986};
+   18068.56};
    TGraphAsymmErrors *grae = new TGraphAsymmErrors(1,hPtSigma_fx3001,hPtSigma_fy3001,hPtSigma_felx3001,hPtSigma_fehx3001,hPtSigma_fely3001,hPtSigma_fehy3001);
    grae->SetName("hPtSigma");
    grae->SetTitle("Graph");
@@ -68,9 +68,9 @@ void canvasSigmaBplusRatioPbPb_0_30()
    grae->SetMarkerStyle(20);
    grae->SetMarkerSize(0.84);
    
-   TH1F *Graph_hPtSigma3001 = new TH1F("Graph_hPtSigma3001","Graph",100,123,129);
-   Graph_hPtSigma3001->SetMinimum(37870.81);
-   Graph_hPtSigma3001->SetMaximum(56273.97);
+   TH1F *Graph_hPtSigma3001 = new TH1F("Graph_hPtSigma3001","Graph",100,266.1,272.1);
+   Graph_hPtSigma3001->SetMinimum(229153.2);
+   Graph_hPtSigma3001->SetMaximum(272517.8);
    Graph_hPtSigma3001->SetDirectory(0);
    Graph_hPtSigma3001->SetStats(0);
 
@@ -96,17 +96,17 @@ void canvasSigmaBplusRatioPbPb_0_30()
    grae->Draw("ep");
    
    Double_t gaeCrossSyst_fx3002[1] = {
-   126};
+   269.1};
    Double_t gaeCrossSyst_fy3002[1] = {
-   47072.39};
+   250835.5};
    Double_t gaeCrossSyst_felx3002[1] = {
    2.5};
    Double_t gaeCrossSyst_fely3002[1] = {
-   5144.303};
+   34064.26};
    Double_t gaeCrossSyst_fehx3002[1] = {
    2.5};
    Double_t gaeCrossSyst_fehy3002[1] = {
-   5144.303};
+   34064.26};
    grae = new TGraphAsymmErrors(1,gaeCrossSyst_fx3002,gaeCrossSyst_fy3002,gaeCrossSyst_felx3002,gaeCrossSyst_fehx3002,gaeCrossSyst_fely3002,gaeCrossSyst_fehy3002);
    grae->SetName("gaeCrossSyst");
    grae->SetTitle("Graph");
@@ -116,9 +116,9 @@ void canvasSigmaBplusRatioPbPb_0_30()
    grae->SetMarkerStyle(20);
    grae->SetMarkerSize(1.142857);
    
-   TH1F *Graph_gaeCrossSyst3002 = new TH1F("Graph_gaeCrossSyst3002","Graph",100,123,129);
-   Graph_gaeCrossSyst3002->SetMinimum(40899.23);
-   Graph_gaeCrossSyst3002->SetMaximum(53245.55);
+   TH1F *Graph_gaeCrossSyst3002 = new TH1F("Graph_gaeCrossSyst3002","Graph",100,266.1,272.1);
+   Graph_gaeCrossSyst3002->SetMinimum(209958.4);
+   Graph_gaeCrossSyst3002->SetMaximum(291712.6);
    Graph_gaeCrossSyst3002->SetDirectory(0);
    Graph_gaeCrossSyst3002->SetStats(0);
 
@@ -155,7 +155,7 @@ tex->SetNDC();
    tex->SetTextSize(0.035);
    tex->SetLineWidth(2);
    tex->Draw();
-      tex = new TLatex(0.53,0.755,"|y| < 2.4");
+      tex = new TLatex(0.53,0.755,"|y|<2.4 (p_{T}<10GeV: |y|>1.5)");
 tex->SetNDC();
    tex->SetTextFont(42);
    tex->SetTextSize(0.035);

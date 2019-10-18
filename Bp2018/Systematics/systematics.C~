@@ -14,13 +14,13 @@ const int nPtBins=9;
 double PtBins[nPtBins+1] = {5.,7.,10.,15.,20.,30.,40.,50.,60.};//add a margin so that "FindBin" can work at the bin end
 
 const int nPtBins_Bs=4;
-double PtBins_Bs[nPtBins+1] = {6.,10.,15.,20.,50};
+double PtBins_Bs[nPtBins+1] = {7.,10.,15.,20.,50};
 
 const int AnaBins=8;
 double AnaPtBins[AnaBins+1] = {5.,7.,10.,15.,20.,30.,40.,50.,60.};
 
 const int nPtBinsCent=1;
-double PtBinsCent[nPtBinsCent+1] = {6.,50.};
+double PtBinsCent[nPtBinsCent+1] = {7.,50.};
 
 const int nCentBins=1;
 double CentBins[nCentBins+1] = {0.,90.};
@@ -73,6 +73,7 @@ TH1D*  PbPbMesonSelection;
 TH1D*  PbPbTagAndProbe;				                
 TH1D*  PbPbAccUnc;
 TH1D*  PbPbPtShape;
+TH1D*  PbPbMCstat;
 //TF1 *fPbPbPtShape= new TF1("fPbPbPtShapeSig","[0]+[1]/(x)+[2]/x/x+[3]*x");
 
 TFile* PbPbMCEfffile = new TFile("../CrossSection/ROOTfiles/MCstudiesPbPb.root");
@@ -126,134 +127,146 @@ void initializationPbPbCent090ptbin()
 {
 
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins,PtBins);
-	PbPbMesonSelection->SetBinContent(1,1.44);
-	PbPbMesonSelection->SetBinContent(2,8.02);
-	PbPbMesonSelection->SetBinContent(3,3.17);
-	PbPbMesonSelection->SetBinContent(4,2.46);
-	PbPbMesonSelection->SetBinContent(5,3.16);
-	PbPbMesonSelection->SetBinContent(6,2.96);
-	PbPbMesonSelection->SetBinContent(7,1.53);
-	PbPbMesonSelection->SetBinContent(8,5.00);
+	PbPbMesonSelection->SetBinContent(1,3.22);
+	PbPbMesonSelection->SetBinContent(2,5.67);
+	PbPbMesonSelection->SetBinContent(3,15.30);
+	PbPbMesonSelection->SetBinContent(4,3.61);
+	PbPbMesonSelection->SetBinContent(5,2.15);
+	PbPbMesonSelection->SetBinContent(6,0.81);
+	PbPbMesonSelection->SetBinContent(7,4.69);
+	PbPbMesonSelection->SetBinContent(8,7.17);
 
 	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBins,PtBins);
-	PbPbSignalExtraction->SetBinContent(1,3.65);
-	PbPbSignalExtraction->SetBinContent(2,5.29);
-	PbPbSignalExtraction->SetBinContent(3,3.08);
-	PbPbSignalExtraction->SetBinContent(4,2.65);
-	PbPbSignalExtraction->SetBinContent(5,2.65);
-	PbPbSignalExtraction->SetBinContent(6,1.37);
-	PbPbSignalExtraction->SetBinContent(7,1.13);
-	PbPbSignalExtraction->SetBinContent(8,0.095);
+	PbPbSignalExtraction->SetBinContent(1,6.48);
+	PbPbSignalExtraction->SetBinContent(2,4.46);
+	PbPbSignalExtraction->SetBinContent(3,2.73);
+	PbPbSignalExtraction->SetBinContent(4,2.80);
+	PbPbSignalExtraction->SetBinContent(5,2.70);
+	PbPbSignalExtraction->SetBinContent(6,0.722);
+	PbPbSignalExtraction->SetBinContent(7,5.45);
+	PbPbSignalExtraction->SetBinContent(8,0.420);
 
-	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",AnaBins,AnaPtBins);
-	double tnpUnc_pbpb[8] = {15.11, 8.96, 6.81, 5.80, 5.82, 6.01, 6.13, 6.30};
-	for(int i = 0; i < AnaBins; i++) {PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_pbpb[i]);}
+	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBins,PtBins);
+	double tnpUnc_pbpb[8] = {18.56, 9.57, 6.75, 5.72, 5.67, 5.81, 6.32, 6.14};
+	for(int i = 0; i < nPtBins; i++) {PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_pbpb[i]);}
 
-	PbPbAccUnc = new TH1D("PbPbAccUnc","",AnaBins,AnaPtBins);
+	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBins,PtBins);
 	double AccUnc_PbPb[8] = {0.006, 0.010, 0.047, 0.026, 0.042, 0.035, 0.008, 0.013};
-	for(int i = 0; i < AnaBins; i++) {PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPb[i]);}
+	for(int i = 0; i < nPtBins; i++) {PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPb[i]);}
 
 	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBins,PtBins);
-	PbPbPtShape->SetBinContent(1,5.40);
-	PbPbPtShape->SetBinContent(2,2.95);
-	PbPbPtShape->SetBinContent(3,2.82);
-	PbPbPtShape->SetBinContent(4,0.71);
-	PbPbPtShape->SetBinContent(5,1.42);
-	PbPbPtShape->SetBinContent(6,0.32);
-	PbPbPtShape->SetBinContent(7,0.04);
-	PbPbPtShape->SetBinContent(8,0.04);
+	PbPbPtShape->SetBinContent(1,0.873);
+	PbPbPtShape->SetBinContent(2,0.128);
+	PbPbPtShape->SetBinContent(3,0.206);
+	PbPbPtShape->SetBinContent(4,0.000);
+	PbPbPtShape->SetBinContent(5,0.010);
+	PbPbPtShape->SetBinContent(6,0.011);
+	PbPbPtShape->SetBinContent(7,0.018);
+	PbPbPtShape->SetBinContent(8,0.047);
 
+	PbPbMCstat = new TH1D("PbPbMCstat","",nPtBins,PtBins);
+	double MCstat_pbpb[8] = {26.86, 14.86, 3.75, 2.20, 1.82, 2.69, 5.13, 6.21};
+	for(int i = 0; i < nPtBins; i++) {PbPbMCstat->SetBinContent(i+1,MCstat_pbpb[i]);}
 }
 
 void initializationPbPbCent090Bsptbin()
 {
 
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins_Bs,PtBins_Bs);
-	PbPbMesonSelection->SetBinContent(1,4.97);
-	PbPbMesonSelection->SetBinContent(2,3.17);
-	PbPbMesonSelection->SetBinContent(3,2.46);
-	PbPbMesonSelection->SetBinContent(4,0.63);
+	PbPbMesonSelection->SetBinContent(1,5.67);
+	PbPbMesonSelection->SetBinContent(2,15.30);
+	PbPbMesonSelection->SetBinContent(3,3.61);
+	PbPbMesonSelection->SetBinContent(4,1.72);
 
 	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBins_Bs,PtBins_Bs);
-	PbPbSignalExtraction->SetBinContent(1,6.43);
-	PbPbSignalExtraction->SetBinContent(2,3.08);
-	PbPbSignalExtraction->SetBinContent(3,2.65);
-	PbPbSignalExtraction->SetBinContent(4,3.19);
+	PbPbSignalExtraction->SetBinContent(1,4.46);
+	PbPbSignalExtraction->SetBinContent(2,2.73);
+	PbPbSignalExtraction->SetBinContent(3,2.80);
+	PbPbSignalExtraction->SetBinContent(4,2.57);
 
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBins_Bs,PtBins_Bs);
-	double tnpUnc_pbpb[4] = {9.92, 6.81, 5.80, 5.88};
+	double tnpUnc_pbpb[4] = {9.57, 6.75, 5.72, 5.72};
 	for(int i = 0; i < nPtBins_Bs; i++) {PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_pbpb[i]);}
 
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBins_Bs,PtBins_Bs);
 	double AccUnc_PbPb[4] = {0.012, 0.047, 0.026, 0.055};
 	for(int i = 0; i < nPtBins_Bs; i++) {PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPb[i]);}
 
-	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBins,PtBins);
-	PbPbPtShape->SetBinContent(1,6.15);
-	PbPbPtShape->SetBinContent(2,2.82);
-	PbPbPtShape->SetBinContent(3,0.71);
-	PbPbPtShape->SetBinContent(4,1.46);
+	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBins_Bs,PtBins_Bs);
+	PbPbPtShape->SetBinContent(1,0.128);
+	PbPbPtShape->SetBinContent(2,0.206);
+	PbPbPtShape->SetBinContent(3,0.000);
+	PbPbPtShape->SetBinContent(4,0.010);
 
+	PbPbMCstat = new TH1D("PbPbMCstat","",nPtBins_Bs,PtBins_Bs);
+	double MCstat_pbpb[4] = {14.86, 3.75, 2.20, 1.51};
+	for(int i = 0; i < nPtBins_Bs; i++) {PbPbMCstat->SetBinContent(i+1,MCstat_pbpb[i]);}
 }
 
 void initializationPbPbCent090()
 {
 
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
-	PbPbMesonSelection->SetBinContent(1,6.37);
+	PbPbMesonSelection->SetBinContent(1,9.19);
 
 	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
-	PbPbSignalExtraction->SetBinContent(1,2.99);
+	PbPbSignalExtraction->SetBinContent(1,2.81);
 
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
-	PbPbTagAndProbe->SetBinContent(1,6.67);
+	PbPbTagAndProbe->SetBinContent(1,7.65);
 
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
 	PbPbAccUnc->SetBinContent(1,0.06);
 
 	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
-	PbPbPtShape->SetBinContent(1,0.65);
+	PbPbPtShape->SetBinContent(1,0.139);
 
+	PbPbMCstat = new TH1D("PbPBMCstat","",nPtBinsCent,PtBinsCent);
+	PbPbMCstat->SetBinContent(1,5.71);
 }
 
 void initializationPbPbCent3090()
 {
 
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
-	PbPbMesonSelection->SetBinContent(1,5.92);
+	PbPbMesonSelection->SetBinContent(1,10.66);
 
 	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
-	PbPbSignalExtraction->SetBinContent(1,3.04);
+	PbPbSignalExtraction->SetBinContent(1,5.88);
 
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
-	PbPbTagAndProbe->SetBinContent(1,7.16);
+	PbPbTagAndProbe->SetBinContent(1,6.66);
 
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
 	PbPbAccUnc->SetBinContent(1,0.06);
 
 	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
-	PbPbPtShape->SetBinContent(1,1.01);
+	PbPbPtShape->SetBinContent(1,0.163);
 
+	PbPbMCstat = new TH1D("PbPBMCstat","",nPtBinsCent,PtBinsCent);
+	PbPbMCstat->SetBinContent(1,2.85);
 }
 
 void initializationPbPbCent030()
 {
 
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBinsCent,PtBinsCent);
-	PbPbMesonSelection->SetBinContent(1,8.13);
+	PbPbMesonSelection->SetBinContent(1,9.71);
 
 	PbPbSignalExtraction = new TH1D("PbPbSignalExtraction","",nPtBinsCent,PtBinsCent);
-	PbPbSignalExtraction->SetBinContent(1,2.89);
+	PbPbSignalExtraction->SetBinContent(1,2.74);
 
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBinsCent,PtBinsCent);
-	PbPbTagAndProbe->SetBinContent(1,6.52);
+	PbPbTagAndProbe->SetBinContent(1,7.59);
 
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBinsCent,PtBinsCent);
 	PbPbAccUnc->SetBinContent(1,0.09);
 
 	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBinsCent,PtBinsCent);
-	PbPbPtShape->SetBinContent(1,0.81);
+	PbPbPtShape->SetBinContent(1,0.131);
 
+	PbPbMCstat = new TH1D("PbPBMCstat","",nPtBinsCent,PtBinsCent);
+	PbPbMCstat->SetBinContent(1,7.11);
 }
 
 
@@ -664,19 +677,20 @@ float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0, double cent
       if (!initialized && centL==30&&centH==90) initialization(0,centL,centH);
     }
 
-  std::cout<<"passed"<<std::endl;
-
   double sys=0;
   
   sys+= PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt))* 
     PbPbSignalExtraction->GetBinContent(PbPbSignalExtraction->FindBin(pt));
-  
+
   sys+= PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt))* 
     PbPbMesonSelection->GetBinContent(PbPbMesonSelection->FindBin(pt));
+
+  std::cout<<"passed"<<std::endl;
   
-  sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
-    PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
-  
+  //sys+= PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100*
+  //PbPbEff->GetBinError(PbPbEff->FindBin(pt))/PbPbEff->GetBinContent(PbPbEff->FindBin(pt))*100;
+ 
+
   sys+=PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt))*
     PbPbPtShape->GetBinContent(PbPbPtShape->FindBin(pt));
   
@@ -689,6 +703,9 @@ float systematicsPbPb(double pt, bool ptbinning = 1, double centL=0, double cent
   
   sys+= PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt))*
     PbPbAccUnc->GetBinContent(PbPbAccUnc->FindBin(pt));
+
+  sys+= PbPbMCstat->GetBinContent(PbPbMCstat->FindBin(pt))*
+    PbPbMCstat->GetBinContent(PbPbMCstat->FindBin(pt));
 
   return sqrt(sys);
 }
